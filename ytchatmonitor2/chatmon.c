@@ -5,6 +5,10 @@
 #include <cnhttpclient.h>
 #include <jsmn.h>
 
+
+char * NextPageToken = 0;
+
+
 const char * GetTokenByName( char * origtext, jsmntok_t * tok )
 {
 	origtext[tok->end] = 0;
@@ -103,7 +107,6 @@ void ReadChatEntry( char * origtext, jsmntok_t ** tok, const char ** chatsnip, c
 void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * tokend )
 {
 	int pollinfo = 0;
-	const char * NextPageToken = 0;
 
 	int nr_children = (*tok)->size;
 	int j;
@@ -119,7 +122,8 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 		}
 		else if( strcmp( st, "nextPageToken" ) == 0 )
 		{
-			NextPageToken = GetTokenByName( origtext, *tok + 1 );
+			if( NextPageToken ) free( NextPageToken );
+			NextPageToken = strdup( GetTokenByName( origtext, *tok + 1 ) );
 		}
 		else if( strcmp( st, "items" ) == 0 )
 		{
@@ -150,12 +154,7 @@ int main()
 	const char * livechatid = "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
 	const char * apikey = "AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE";
 	const char * reqtype = "authorDetails,snippet";
-	sprintf( curlurl, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&part=%s&key=%s",
-		livechatid, 
-		reqtype,
-		apikey );
 
-	//Get a bunch of messages
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
 	req.host = 0;
@@ -164,25 +163,42 @@ int main()
 	req.AddedHeaders = "";
 	req.AuxData = 0;
 	req.AuxDataLength = 0;
-	struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
 
-	//printf( "PAYLOAD: %s\n", r->payload );
-	jsmn_init( &jsmnp );
-	int tottoks = jsmn_parse(&jsmnp, r->payload, r->payloadlen,
-		tokens, sizeof(tokens)/sizeof(tokens[0]) );
-	if( tottoks <= 0 )
+	while( 1 )
 	{
-		fprintf( stderr, "Error parsing the JSON\n" );
-		return -1;
+		sprintf( curlurl, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&part=%s&key=%s%s%s",
+			livechatid, 
+			reqtype,
+			apikey,
+			NextPageToken?"&pageToken=":"",
+			NextPageToken?NextPageToken:"" );
+
+
+		printf("%s\n", curlurl );
+
+		//Get a bunch of messages
+		struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
+
+		//printf( "PAYLOAD: %s\n", r->payload );
+		jsmn_init( &jsmnp );
+		int tottoks = jsmn_parse(&jsmnp, r->payload, r->payloadlen,
+			tokens, sizeof(tokens)/sizeof(tokens[0]) );
+		if( tottoks <= 0 )
+		{
+			fprintf( stderr, "Error parsing the JSON\n" );
+			return -1;
+		}
+
+		int messages = 0;
+
+		jsmntok_t * tok = &tokens[0];
+
+		ProcessChatMessageResponse( r->payload, &tok, &tokens[tottoks] );
+
+		CNHTTPClientCleanup( r );
+
+		sleep(2);
 	}
-
-	int messages = 0;
-
-	jsmntok_t * tok = &tokens[0];
-
-	ProcessChatMessageResponse( r->payload, &tok, &tokens[tottoks] );
-
-	CNHTTPClientCleanup( r );
 
 }
 
