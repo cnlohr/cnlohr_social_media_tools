@@ -179,6 +179,8 @@ int main()
 		//Get a bunch of messages
 		struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
 
+		r->payload[r->payloadlen-1] = 0;
+
 		//printf( "PAYLOAD: %s\n", r->payload );
 		jsmn_init( &jsmnp );
 		int tottoks = jsmn_parse(&jsmnp, r->payload, r->payloadlen,
@@ -191,7 +193,7 @@ int main()
 		}
 		else
 		{
-			fprintf( stderr, "Error parsing the JSON : %s\n", r->payload );
+			fprintf( stderr, "Error %d parsing the JSON : %s\n", tottoks, r->payload );
 			CNHTTPClientCleanup( r );
 		}
 
