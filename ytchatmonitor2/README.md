@@ -60,6 +60,8 @@
 	Then, to get the author name: 
 		curl "https://www.googleapis.com/youtube/v3/channels?part=id,snippet,statistics,contentDetails,topicDetails&id=UCG7yIWtVwcENg_ZS-nahg5g&key=AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE"
 
+		curl "https://www.googleapis.com/youtube/v3/channels?part=id,snippet,statistics,contentDetails,topicDetails&id=UCCtuJQDZFMZJUdPX6Qxxc8g&key=AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE"
+
 
 
 
