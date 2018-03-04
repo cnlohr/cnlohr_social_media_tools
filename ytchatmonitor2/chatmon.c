@@ -138,6 +138,7 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 				chatsnip = authorsnip = 0;
 				ReadChatEntry( origtext, tok, &chatsnip, &authorsnip );
 				printf( "%s: %s\n", authorsnip, chatsnip );
+				fflush( stdout );
 			}
 		}
 		ProcessNextElement( tok );
