@@ -4,9 +4,11 @@
 #include <cnsslclient.h>
 #include <cnhttpclient.h>
 #include <jsmn.h>
+#include <unistd.h>
 
 
 char * NextPageToken = 0;
+	int pollinfo = 0;
 
 
 const char * GetTokenByName( char * origtext, jsmntok_t * tok )
@@ -106,7 +108,6 @@ void ReadChatEntry( char * origtext, jsmntok_t ** tok, const char ** chatsnip, c
 
 void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * tokend )
 {
-	int pollinfo = 0;
 
 	int nr_children = (*tok)->size;
 	int j;
@@ -173,8 +174,7 @@ int main()
 			NextPageToken?"&pageToken=":"",
 			NextPageToken?NextPageToken:"" );
 
-
-		printf("%s\n", curlurl );
+		//printf("%s\n", curlurl );
 
 		//Get a bunch of messages
 		struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
@@ -183,21 +183,22 @@ int main()
 		jsmn_init( &jsmnp );
 		int tottoks = jsmn_parse(&jsmnp, r->payload, r->payloadlen,
 			tokens, sizeof(tokens)/sizeof(tokens[0]) );
-		if( tottoks <= 0 )
+		if( tottoks > 0 )
 		{
-			fprintf( stderr, "Error parsing the JSON\n" );
-			return -1;
+			jsmntok_t * tok = &tokens[0];
+			ProcessChatMessageResponse( r->payload, &tok, &tokens[tottoks] );
+			CNHTTPClientCleanup( r );
+		}
+		else
+		{
+			fprintf( stderr, "Error parsing the JSON : %s\n", r->payload );
+			CNHTTPClientCleanup( r );
 		}
 
-		int messages = 0;
-
-		jsmntok_t * tok = &tokens[0];
-
-		ProcessChatMessageResponse( r->payload, &tok, &tokens[tottoks] );
-
-		CNHTTPClientCleanup( r );
-
-		sleep(2);
+		if( pollinfo )
+			usleep( pollinfo * 1000 );
+		else
+			sleep(2);
 	}
 
 }
