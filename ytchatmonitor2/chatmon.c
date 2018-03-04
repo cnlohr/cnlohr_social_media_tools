@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include <cnsslclient.h>
 #include <cnhttpclient.h>
 #include <jsmn.h>
@@ -23,79 +23,74 @@ void ProcessNextElement( jsmntok_t ** tok )
 	}
 }
 
-void ReadInsideChatSnippet( char * origtext, jsmntok_t ** tok )
+const char * ReadInsideChatSnippet( char * origtext, jsmntok_t ** tok )
 {
+	const char * msgo = 0;
 	int j;
 	int nr_children = (*tok)->size;
-	printf( "___NR_CHILDREN: %d\n", nr_children );
 
 	for( j = 0; j < nr_children; j++ )
 	{
 		(*tok)++;
 		const char * st = GetTokenByName( origtext, *tok );
-		printf( "ST: %s\n", st );
+
 		if( strcmp( st, "displayMessage" ) == 0 )
 		{
-			const char * msg = GetTokenByName( origtext, (*tok) + 1 );
-			printf( "SSST: %s\n", msg );
+			msgo = GetTokenByName( origtext, (*tok) + 1 );
 			ProcessNextElement( tok );
 		}
 		else
 		{
-			printf( "____GOT: %s\n", st );
 			ProcessNextElement( tok );
 		}
 	}
+	return msgo;
 }
 
 
-void ReadInsideChatAuthorDetails( char * origtext, jsmntok_t ** tok )
+const char * ReadInsideChatAuthorDetails( char * origtext, jsmntok_t ** tok )
 {
+	const char * auth = 0;
 	int j;
 	int nr_children = (*tok)->size;
-	printf( "_+++NR_CHILDREN: %d\n", nr_children );
 
 	for( j = 0; j < nr_children; j++ )
 	{
 		(*tok)++;
-		int siz = (*tok)->end - (*tok)->start;
+		const char * st = GetTokenByName( origtext, *tok );
 
-		char buff[siz+1];
-		memcpy( buff, origtext + (*tok)->start, siz );
-		buff[siz] = 0;
-		printf( "__+++GOT: %s\n", buff );
+		if( strcmp( st, "displayName" ) == 0 )
+		{
+			auth = GetTokenByName( origtext, (*tok) + 1 );
+			ProcessNextElement( tok );
+		}
 
 		ProcessNextElement( tok );
 	}
+	return auth;
 }
 
 
-void ReadChatEntry( const char * origtext, jsmntok_t ** tok )
+void ReadChatEntry( char * origtext, jsmntok_t ** tok, const char ** chatsnip, const char ** authorsnip )
 {
 	//Found items... Advnce to next token.
 	int j;
 	int nr_children = (*tok)->size;
-	printf( "NR_CHILDREN: %d\n", nr_children );
 
 	for( j = 0; j < nr_children; j++ )
 	{
 		(*tok)++;
-		int siz = (*tok)->end - (*tok)->start;
+		const char * st = GetTokenByName( origtext, *tok );
 
-		char buff[siz+1];
-		memcpy( buff, origtext + (*tok)->start, siz );
-		buff[siz] = 0;
-		printf( "GOT: %s\n", buff );
-
-		if( strcmp( buff, "snippet" ) == 0 )
+		if( strcmp( st, "snippet" ) == 0 )
 		{
 			(*tok)++;
-			ReadInsideChatSnippet( origtext, tok );
+			*chatsnip = ReadInsideChatSnippet( origtext, tok );
 		}
-		else if( strcmp( buff, "authorDetails" ) == 0 )
+		else if( strcmp( st, "authorDetails" ) == 0 )
 		{
 			(*tok)++;
-			ReadInsideChatAuthorDetails( origtext, tok );
+			*authorsnip = ReadInsideChatAuthorDetails( origtext, tok );
 		}
 		else
 		{
@@ -103,6 +98,47 @@ void ReadChatEntry( const char * origtext, jsmntok_t ** tok )
 		}
 	}
 }
+
+
+void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * tokend )
+{
+	int pollinfo = 0;
+	const char * NextPageToken = 0;
+
+	int nr_children = (*tok)->size;
+	int j;
+	for( j = 0; j < nr_children; j++ )
+	{
+		(*tok)++;
+		const char * st = GetTokenByName( origtext, *tok );
+
+		if( strcmp( st, "pollingIntervalMillis" ) == 0 )
+		{			
+			const char * st = GetTokenByName( origtext, *tok + 1 );
+			pollinfo = atoi( st );
+		}
+		else if( strcmp( st, "nextPageToken" ) == 0 )
+		{
+			NextPageToken = GetTokenByName( origtext, *tok + 1 );
+		}
+		else if( strcmp( st, "items" ) == 0 )
+		{
+			(*tok)++;
+			int nr_children = (*tok)->size;
+			int i;
+			for( i = 0; i < nr_children; i++ )
+			{
+				(*tok)++;
+				const char * chatsnip, *authorsnip;
+				chatsnip = authorsnip = 0;
+				ReadChatEntry( origtext, tok, &chatsnip, &authorsnip );
+				printf( "%s: %s\n", authorsnip, chatsnip );
+			}
+		}
+		ProcessNextElement( tok );
+	}
+}
+
 
 
 int main()
@@ -113,7 +149,7 @@ int main()
 
 	const char * livechatid = "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
 	const char * apikey = "AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE";
-	const char * reqtype = "snippet"; //"authorDetails,snippet";
+	const char * reqtype = "authorDetails,snippet";
 	sprintf( curlurl, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&part=%s&key=%s",
 		livechatid, 
 		reqtype,
@@ -130,7 +166,7 @@ int main()
 	req.AuxDataLength = 0;
 	struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
 
-	printf( "PAYLOAD: %s\n", r->payload );
+	//printf( "PAYLOAD: %s\n", r->payload );
 	jsmn_init( &jsmnp );
 	int tottoks = jsmn_parse(&jsmnp, r->payload, r->payloadlen,
 		tokens, sizeof(tokens)/sizeof(tokens[0]) );
@@ -140,38 +176,11 @@ int main()
 		return -1;
 	}
 
-	int i;
-
 	int messages = 0;
 
-	jsmntok_t * tok = &tokens[i];
-	for( i = 1; i < tottoks; i++ )
-	{
-		tok = &tokens[i];
+	jsmntok_t * tok = &tokens[0];
 
-		if( memcmp( tok->start + r->payload, "items", 5 ) == 0 )
-		{
-			break;
-		}
-
-		i += tok->size;
-	}
-
-	//This gets us to the array [] element so we can see how many messages we can use.
-	tok++;
-	messages = tok->size;
-	printf("MESSAGES: %d\n", messages );
-
-	//We want to advance to the first message.
-	tok++;
-
-	for( ; i < messages; i++ )
-	{
-		ReadChatEntry( r->payload, &tok );
-		tok++;
-		printf( "SSST MESSAGE %d\n", i );
-	}
-
+	ProcessChatMessageResponse( r->payload, &tok, &tokens[tottoks] );
 
 	CNHTTPClientCleanup( r );
 
