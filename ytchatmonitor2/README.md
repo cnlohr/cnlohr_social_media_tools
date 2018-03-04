@@ -63,5 +63,6 @@
 		curl "https://www.googleapis.com/youtube/v3/channels?part=id,snippet,statistics,contentDetails,topicDetails&id=UCCtuJQDZFMZJUdPX6Qxxc8g&key=AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE"
 
 
+abaltazar8 : its fine @CNLohr, the first request gets all chat history, to get updates, but after that you can use﻿ the nextPageToken to get the new messages instead of getting the whole thing
 
 
