@@ -5,6 +5,40 @@
 #include <cnhttpclient.h>
 #include <jsmn.h>
 
+void ProcessNextElement( jsmntok_t ** tok )
+{
+	int nr_children = (*tok)->size;
+	int j;
+	//printf( "Process Next: %d\n", nr_children );
+	for( j = 0; j < nr_children; j++ )
+	{
+		(*tok)++;
+		ProcessNextElement( tok );
+	}
+}
+
+void ReadChatEntry( const char * origtext, jsmntok_t ** tok )
+{
+	//Found items... Advnce to next token.
+	int j;
+	int nr_children = (*tok)->size;
+	printf( "NR_CHILDREN: %d\n", nr_children );
+
+	for( j = 0; j < nr_children; j++ )
+	{
+		(*tok)++;
+		int siz = (*tok)->end - (*tok)->start;
+
+		char buff[siz+1];
+		memcpy( buff, origtext + (*tok)->start, siz );
+		buff[siz] = 0;
+		printf( "GOT: %s\n", buff );
+
+		ProcessNextElement( tok );
+	}
+}
+
+
 int main()
 {
 	char curlurl[8192];
@@ -39,38 +73,35 @@ int main()
 	}
 
 	int i;
+
+	int messages = 0;
+
+	jsmntok_t * tok = &tokens[i];
 	for( i = 1; i < tottoks; i++ )
 	{
-		jsmntok_t * tok = &tokens[i];
+		tok = &tokens[i];
 
-		if( memcmp( tok->start + r->payload, "items", 5 ) != 0 )
+		if( memcmp( tok->start + r->payload, "items", 5 ) == 0 )
 		{
-			i += tok->size;
-			continue;
+			break;
 		}
 
-		i+=2;
-		break;
+		i += tok->size;
 	}
-	for( ; i < tottoks; i++ )
-	{
-		//Found items... Advnce to next token.
-		jsmntok_t * tok = &tokens[i];
-		int siz = tok->end - tok->start;
-		int j;
-		int nrt = tok->size;
-		printf( "==================== %d %d\n", i, nrt );
-		for( j = i; j < i+nrt; j++ )
-		{
-			tok = &tokens[j];
-			printf( "SIZ: %d %d %d\n", siz, tok->type, tok->size );
-			char memcpybuf[siz+1];
-			memcpy( memcpybuf, tok->start + r->payload, siz );
-			memcpybuf[siz] = 0;
-			printf( "%d/%d -> %s\n", tok->type, siz, memcpybuf );
-		}
 
-		printf( "--------------------------\n" );
+	//This gets us to the array [] element so we can see how many messages we can use.
+	tok++;
+	messages = tok->size;
+	printf("MESSAGES: %d\n", messages );
+
+	//We want to advance to the first message.
+	tok++;
+
+
+	for( ; i < messages; i++ )
+	{
+		ReadChatEntry( r->payload, &tok );
+		tok++;
 	}
 
 
