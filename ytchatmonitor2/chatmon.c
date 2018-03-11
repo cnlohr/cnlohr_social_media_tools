@@ -147,14 +147,20 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 
 
 
-int main()
+int main( int argc, char ** argv )
 {
 	char curlurl[8192];
 	jsmntok_t tokens[131072];
 	jsmn_parser jsmnp;
 
-	const char * livechatid = "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
-	const char * apikey = "AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE";
+	if( argc != 3 )
+	{
+		fprintf( stderr, "Error! Usage: ./chatmon [apikey] [livechatid]\n" );
+		return -5;
+	}	
+
+	const char * livechatid = argv[2];//"EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
+	const char * apikey = argv[1];//"AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE";
 	const char * reqtype = "authorDetails,snippet";
 
 	struct cnhttpclientrequest req;
