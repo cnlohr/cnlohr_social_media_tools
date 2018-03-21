@@ -5,6 +5,7 @@
 #include <cnhttpclient.h>
 #include <jsmn.h>
 #include <unistd.h>
+#include <time.h>
 
 int first = 1;
 char * NextPageToken = 0;
@@ -148,8 +149,16 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 
 					//curl -X POST --data '{ "embeds": [{"title":"Test title", "description": "test text", "type": "rich", "color":"65535"}] }' -H "Content-Type: application/json" https://discordapp.com/api/webhooks/<ID>/<TOKEN>
 
+					time_t curtime;
+					time(&curtime);
 					sprintf( discordurl, "https://discordapp.com/api/webhooks/%s", discordtoken );
-					int len = sprintf( discorddata, "{ \"embeds\": [{\"title\":\"%s\", \"description\": \"%s\", \"type\": \"rich\", \"color\":\"65535\"}] }", authorsnip, chatsnip );
+					//printf( "...\n" );
+					char ctimebuffer[128];
+					int ctn = snprintf( ctimebuffer, 127, "%s", ctime( &curtime ) );
+					if( ctn ) ctimebuffer[ctn-1] = ':';
+					//char fullmsg[8182];
+					//snprintf( fullmsg, 7000, "%s%s",ctimebuffer, chatsnip );
+					int len = snprintf( discorddata, sizeof(discorddata), "{ \"embeds\": [{\"title\":\"%s:%s\", \"description\": \"%s\", \"type\": \"rich\", \"color\":\"65535\"}] }", authorsnip, ctimebuffer, chatsnip );
 					char addedh[1024];
 					sprintf( addedh, "Content-Type: application/json\r\nContent-length: %d", len );
 					reqdiscord.AddedHeaders = addedh;
@@ -157,6 +166,7 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 
 					struct cnhttpclientresponse * r = CNHTTPClientTransact( &reqdiscord );
 					r->payload[r->payloadlen-1] = 0;
+					//printf( "%s\n", r->payload );
 					CNHTTPClientCleanup( r );
 
 				}
