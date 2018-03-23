@@ -29,6 +29,8 @@ int main( int argc, char ** argv )
 
 
 		printf( "%s %s", ctimebuffer, chatline );
+		fflush ( stdout );
+
 		bufsize = IBUFSIZE;
 	}
 

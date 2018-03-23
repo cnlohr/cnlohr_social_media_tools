@@ -38,7 +38,7 @@ int main( int argc, char ** argv )
 
     while( (characters = getline(&chatline,&bufsize,stdin)) >= 0 )
 	{
-		chatline[characters] = 0;
+		chatline[characters-1] = 0;
 		int len = 0;
 
 		if( sendmode == 0 )
@@ -65,7 +65,7 @@ int main( int argc, char ** argv )
 
 		sprintf( addedh, "Content-Type: application/json\r\nContent-length: %d", len );
 		reqdiscord.AuxDataLength = len;
-printf( "%s\n", discorddata );
+		//printf( "%s\n", discorddata );
 		struct cnhttpclientresponse * r = CNHTTPClientTransact( &reqdiscord );
 		r->payload[r->payloadlen-1] = 0;
 		if( r->payloadlen )
