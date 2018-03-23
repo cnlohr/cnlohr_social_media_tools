@@ -1,0 +1,6 @@
+[submodule "cntools"]
+	path = cntools
+	url = https://github.com/cnlohr/cntools
+[submodule "jsmn"]
+	path = jsmn
+	url = https://github.com/zserge/jsmn.git
