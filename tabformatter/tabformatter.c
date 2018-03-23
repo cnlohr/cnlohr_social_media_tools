@@ -19,7 +19,7 @@ int main( int argc, char ** argv )
 		{
 			*cts = 0;
 			cts++;
-			printf( "**%s**:%s\n", chatline, cts );
+			printf( "**%s**: %s\n", chatline, cts );
 		}
 		else
 		{
