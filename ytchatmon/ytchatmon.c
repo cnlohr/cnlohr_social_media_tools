@@ -6,7 +6,8 @@
 #include <jsmn.h>
 #include <unistd.h>
 
-
+int show_history = 0;
+int notfirst = 0;
 char * NextPageToken = 0;
 	int pollinfo = 0;
 
@@ -111,6 +112,7 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 
 	int nr_children = (*tok)->size;
 	int j;
+
 	for( j = 0; j < nr_children; j++ )
 	{
 		(*tok)++;
@@ -137,31 +139,42 @@ void ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t * t
 				const char * chatsnip, *authorsnip;
 				chatsnip = authorsnip = 0;
 				ReadChatEntry( origtext, tok, &chatsnip, &authorsnip );
-				printf( "%s: %s\n", authorsnip, chatsnip );
-				fflush( stdout );
+
+				if( notfirst || show_history )
+				{
+					printf( "%s\t%s\n", authorsnip, chatsnip );
+					fflush( stdout );
+				}
 			}
 		}
 		ProcessNextElement( tok );
 	}
+	notfirst = 1;
 }
 
 
 
 int main( int argc, char ** argv )
 {
+	char curlurlbase[8192];
 	char curlurl[8192];
 	jsmntok_t tokens[131072];
 	jsmn_parser jsmnp;
 
-	if( argc != 3 )
+	if( argc != 4 )
 	{
-		fprintf( stderr, "Error! Usage: ./chatmon [apikey] [livechatid]\n" );
+		fprintf( stderr, "Error! Usage: ./chatmon [apikey] [livechatid] [show_history (0/1)]\n" );
+		fprintf( stderr, "Reads youtube livestream comments and sends to STDOUT. Format: [user]\\t[text]\\n\n" );
 		return -5;
 	}	
 
 	const char * livechatid = argv[2];//"EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
 	const char * apikey = argv[1];//"AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE";
 	const char * reqtype = "authorDetails,snippet";
+	show_history = atoi( argv[3] );
+	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&key=%s&",livechatid,apikey);
+	memset( argv[1], '-', strlen( argv[1] ) );
+	memset( argv[2], '-', strlen( argv[2] )  );
 
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
@@ -174,10 +187,9 @@ int main( int argc, char ** argv )
 
 	while( 1 )
 	{
-		sprintf( curlurl, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&part=%s&key=%s%s%s",
-			livechatid, 
+		sprintf( curlurl, "%spart=%s%s%s",
+			curlurlbase,
 			reqtype,
-			apikey,
 			NextPageToken?"&pageToken=":"",
 			NextPageToken?NextPageToken:"" );
 

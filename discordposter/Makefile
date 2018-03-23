@@ -1,4 +1,4 @@
-all : ytchatmon
+all : discordposter
 
 CNTOOLS:= \
 	../cntools/ssl/cnhttpclient.c \
@@ -10,7 +10,7 @@ JSMN:=../jsmn/jsmn.c
 LDFLAGS:=-lssl -lcrypto
 CFLAGS:=-g -I../cntools/ssl -I../jsmn
 
-ytchatmon : ytchatmon.c $(CNTOOLS) $(JSMN)
+discordposter : discordposter.c $(CNTOOLS) $(JSMN)
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean :
