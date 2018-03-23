@@ -5,6 +5,8 @@
 #include <cnhttpclient.h>
 #include <unistd.h>
 
+#define IBUFSIZE (8192-1024)
+
 int main( int argc, char ** argv )
 {
 	unsigned int sendmode;
@@ -20,11 +22,11 @@ int main( int argc, char ** argv )
 	char discordurl[256];
 	sprintf( discordurl, "https://discordapp.com/api/webhooks/%s", argv[1] );
 	memset( argv[1], '-', strlen( argv[1] ) );	//Prevent ps and /proc from seeing the variable.
-    size_t bufsize = 7168;
+    size_t bufsize = IBUFSIZE;
     int    characters;
 	struct cnhttpclientrequest reqdiscord;
 
-	chatline = malloc( bufsize );
+	chatline = malloc( IBUFSIZE );
 
 	memset( &reqdiscord, 0, sizeof( reqdiscord ) );
 	reqdiscord.host = 0;
@@ -71,58 +73,9 @@ printf( "%s\n", discorddata );
 		CNHTTPClientCleanup( r );
 
 		usleep( 100000 );
-		bufsize = sizeof(chatline);
+		bufsize = IBUFSIZE;
 	}
 	fprintf( stderr, "discordposter received EOF.\n" );
-#if 0
-    if( buffer == NULL)
-    {
-        perror("Unable to allocate buffer");
-        exit(1);
-    }
-
-
-	char curlurl[8192];
-	jsmn_parser jsmnp;
-
-
-	const char * discordtoken = 0;
-	char discordurl[8192];
-
-	discordtoken = argv[1];
-
-					//time_t curtime;
-					//time(&curtime);
-					//printf( "...\n" );
-					char ctimebuffer[128];
-					int ctn = snprintf( ctimebuffer, 127, "%s", ctime( &curtime ) );
-					if( ctn ) ctimebuffer[ctn-1] = ':';
-					//char fullmsg[8182];
-					//snprintf( fullmsg, 7000, "%s%s",ctimebuffer, chatsnip );
-					int len = snprintf( discorddata, sizeof(discorddata), "{ \"embeds\": [{\"title\":\"%s:%s\", \"description\": \"%s\", \"type\": \"rich\", \"color\":\"65535\"}] }", authorsnip, ctimebuffer, chatsnip );
-					char addedh[1024];
-					sprintf( addedh, "Content-Type: application/json\r\nContent-length: %d", len );
-					reqdiscord.AddedHeaders = addedh;
-					reqdiscord.AuxDataLength = len;
-
-					struct cnhttpclientresponse * r = CNHTTPClientTransact( &reqdiscord );
-					r->payload[r->payloadlen-1] = 0;
-					//printf( "%s\n", r->payload );
-					CNHTTPClientCleanup( r );
-
-	struct cnhttpclientrequest req;
-	memset( &req, 0, sizeof( req ) );
-	req.host = 0;
-	req.port = 0;
-	req.URL = curlurl;
-	req.AddedHeaders = addedh;
-	req.AuxData = 0;
-	req.AuxDataLength = 0;
-
-	
-	{
-	}
-#endif
-
+	return 0;
 }
 
