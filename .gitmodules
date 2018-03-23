@@ -1,9 +1,0 @@
-[submodule "ytchatmonitor2/cntools"]
-	path = ytchatmonitor2/cntools
-	url = https://github.com/cnlohr/cntools.git
-[submodule "ytchatmonitor2/jsmn"]
-	path = ytchatmonitor2/jsmn
-	url = https://github.com/zserge/jsmn.git
-[submodule "ytchatmonitor_discord_bridge/cntools"]
-	path = ytchatmonitor_discord_bridge/cntools
-	url = https://github.com/cnlohr/cntools
