@@ -10,6 +10,7 @@ int main( int argc, char ** argv )
 	if( argc != 2 )
 	{
 		fprintf( stderr, "Error: Use:  writeid3soruce [mp3 file] < comment\n" );
+		exit(-10);
 	}
 
 	ID3v2_tag* tag = load_tag(argv[1]); // Load the full tag from the file
