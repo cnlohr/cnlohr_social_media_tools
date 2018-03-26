@@ -4,7 +4,7 @@ writeid3source [w/r] [Command]
 
 Wanna freak out your friends with your mad leet command-line foo?
 
-```for f in *.mp3; do echo -ne $f\\t; writeid3source r "${f}"; done > songlist.csv```
+```for f in *.mp3; do echo -ne $f\\t; writeid3source r "${f}"; echo -ne \\n; done > songlist.csv```
 
 Edit songlist.csv then...
 
