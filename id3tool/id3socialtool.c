@@ -70,7 +70,7 @@ int main( int argc, char ** argv )
 			printf( "\"" );
 		}
 		else
-			printf( "Unkown track");
+			printf( "Unknown track");
 		printf( " by " );
 		if( artist )
 		{
@@ -85,7 +85,7 @@ int main( int argc, char ** argv )
 			printf( "\t" );
 		}
 		else
-			printf( "Unkown artist\t" );
+			printf( "Unknown artist\t" );
 
 		ID3v2_frame* comment_frame = tag_get_comment(tag); // Get the copyright message frame
 		if( comment_frame )
