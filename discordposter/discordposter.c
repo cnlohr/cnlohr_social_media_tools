@@ -22,8 +22,8 @@ int main( int argc, char ** argv )
 	char discordurl[256];
 	sprintf( discordurl, "https://discordapp.com/api/webhooks/%s", argv[1] );
 	memset( argv[1], '-', strlen( argv[1] ) );	//Prevent ps and /proc from seeing the variable.
-    size_t bufsize = IBUFSIZE;
-    int    characters;
+	size_t bufsize = IBUFSIZE;
+	int characters;
 	struct cnhttpclientrequest reqdiscord;
 
 	chatline = malloc( IBUFSIZE );
@@ -36,7 +36,7 @@ int main( int argc, char ** argv )
 	reqdiscord.AuxData = discorddata;
 	reqdiscord.AuxDataLength = 0;
 
-    while( (characters = getline(&chatline,&bufsize,stdin)) >= 0 )
+	while( (characters = getline(&chatline,&bufsize,stdin)) >= 0 )
 	{
 		chatline[characters-1] = 0;
 		printf( "%s\n", chatline );
