@@ -1,6 +1,6 @@
 Tool for reading/writing the id3 comment field in MP3 files.
 
-writeid3source [w/r] [Command]
+writeid3source [w/r/Y] [Command]
 
 Wanna freak out your friends with your mad leet command-line foo?
 

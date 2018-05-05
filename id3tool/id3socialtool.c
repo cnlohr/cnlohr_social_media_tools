@@ -63,7 +63,7 @@ int main( int argc, char ** argv )
 			int i;
 			for( i = 0; i < tc->size; i++ )
 			{
-				if( tc->data[i] != -1 && tc->data[i] != -2 )
+				if( tc->data[i] != -1 && tc->data[i] != -2 && tc->data[i] != 0 )
 					putchar( tc->data[i] );
 			}
 			//fwrite( tc->data, tc->size, 1, stdout );
@@ -78,7 +78,7 @@ int main( int argc, char ** argv )
 			int i;
 			for( i = 0; i < tc->size; i++ )
 			{
-				if( tc->data[i] != -1 && tc->data[i] != -2 )
+				if( tc->data[i] != -1 && tc->data[i] != -2 && tc->data[i] != 0 )
 					putchar( tc->data[i] );
 			}
 
@@ -100,7 +100,7 @@ int main( int argc, char ** argv )
 						putchar( '\t' );
 					else if( tc->text->data[i] == '\r' )
 						;
-					else if( tc->text->data[i] != -1 && tc->text->data[i] != -2 )
+					else if( tc->text->data[i] != -1 && tc->text->data[i] != -2 && tc->text->data[i] != 0 )
 						putchar( tc->text->data[i] );
 				}
 

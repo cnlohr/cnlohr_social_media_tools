@@ -7,3 +7,6 @@
 [submodule "id3tool/id3v2lib"]
 	path = id3tool/id3v2lib
 	url = https://github.com/larsbs/id3v2lib
+[submodule "rawdraw"]
+	path = rawdraw
+	url = https://github.com/cnlohr/rawdraw
