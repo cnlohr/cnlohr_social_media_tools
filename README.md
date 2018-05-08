@@ -16,3 +16,7 @@ make
 ./yt_oauth_helper
 ```
 
+
+Some other notes...
+	* Consider getting livechatid from yt_stream_stats...
+

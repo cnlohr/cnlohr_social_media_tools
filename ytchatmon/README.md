@@ -19,7 +19,7 @@
       part = snippet / broadcstStatus = all / broadcstType = all
 
 	Use OAUTH on this site to get the liveChatId
-		EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU
+		EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU  <<Example livechat ID.
 
 
 	Then you can use API Key here..
