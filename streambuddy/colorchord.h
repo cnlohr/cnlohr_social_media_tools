@@ -8,13 +8,17 @@ uint8_t * cc_lights_data;
 uint8_t * cc_dft_data;
 uint8_t * cc_notes_data;
 
-#define CC_X 16
-#define CC_Y 3
 
 #define CC_START_X 0
 #define CC_END_X WIN_X
+
+#ifdef FULL_1080P
+#define CC_X 16
+#define CC_Y 3
+#define CC_START_Y WIN_Y
 #define CCW_START_X WIN_X
 #define CCW_END_X BRD_X
+#endif
 
 uint32_t CCtoHEX( float note, float sat, float value );
 uint32_t HSVtoHEX( float hue, float sat, float value );
@@ -32,13 +36,14 @@ void DrawColorChord()
 {
 	int freqbins = 1;
 
+#if 0
 	if( cc_lights_data )
 	{
 		int x, y;
 		uint8_t * mark = cc_lights_data + 4;
 
 		int sx = CCW_END_X-CCW_START_X;
-		int sy = BRD_Y-WIN_Y;
+		int sy = BRD_Y-CC_START_Y;
 
 		sx /= CC_X;
 		sy /= CC_Y;
@@ -49,11 +54,12 @@ void DrawColorChord()
 			CNFGColor( mark[0] | mark[1] << 8 | mark[2] << 16 );
 
 			int rx = x * sx + CCW_START_X;
-			int ry = y * sy + WIN_Y;
+			int ry = y * sy + CC_START_Y;
 			CNFGTackRectangle( rx, ry, rx + sx, ry + sy );
 			mark+=3;
 		}
 	}
+#endif
 	if( cc_dft_data )
 	{
 		int octaves = ((int*)cc_dft_data)[0];
@@ -65,10 +71,12 @@ void DrawColorChord()
 		sx /= octaves * freqbins;
 		for( ; i < octaves * freqbins; i++ )
 		{
-			CNFGColor( CCtoHEX( (i% freqbins)/(float) freqbins,1, .8 ) );
+			float rsat =  unfoldedbins[i]*20;
+			if( rsat > .8 ) rsat = .8;
+			CNFGColor( CCtoHEX( (i% freqbins)/(float) freqbins,1, rsat ) );
 			int rx = i * sx + CC_START_X;
-			int ry = BRD_Y - unfoldedbins[i]*400;
-			CNFGTackRectangle( rx, ry, rx+sx+1, BRD_Y );
+			int ry = BRD_Y - unfoldedbins[i]*500;
+			CNFGTackRectangle( rx, ry, rx+sx+1, ry+1000 );
 		}
 	}
 
@@ -76,14 +84,34 @@ void DrawColorChord()
 	{
 		int notespop = ((int*)cc_notes_data)[0];
 		struct NoteDists * nd = (struct NoteDists *)(&(((int*)cc_notes_data)[1]));
-		printf( "%d %f\n", notespop, nd[0].mean/freqbins );
+	}
+
+	if( cc_lights_data )
+	{
+		const char * playing = "Now--->Playing";
+		int x, y;
+		uint8_t * mark = cc_lights_data + 4;
+		for( y = 0; y < 2; y++ )
+		for( x = 0; x < 7; x++ )
+		{
+			int r = mark[0]; int g = mark[1]; int b = mark[2];
+			if( r > 230 ) r = 230; if( g > 230 ) g = 230; if( b > 230 ) b = 230;
+			r += 20; g += 20; b += 20;
+			CNFGColor( r |g << 8 | b << 16 );
+			mark += 3;
+			DrawFatTextAt( 5+x*BIG_SIZE*3,  WIN_Y+8+y*BIG_SIZE*6, BIG_SIZE, -1, -1, "%c", playing[x+y*7] );
+		}
+	}
+	else
+	{
+		DrawFatTextAt( 5,  WIN_Y+8, BIG_SIZE, -1, -1, "Now -->\nPlaying\n" );
 	}
 }
 
 void StartColorChord()
 {
 	dft_fd = shm_open("/ccdft", O_RDONLY, 0666);
-	if (cc_fd == -1) {
+	if (cc_fd < 0 ) {
 		printf("shared memory failed\n");
 	}
 	else
@@ -96,30 +124,27 @@ void StartColorChord()
 
 
 	notes_fd = shm_open("/ccnotes", O_RDONLY, 0666);
-	if (notes_fd == -1) {
+	if (notes_fd < 0 ) {
 		printf("notes shared memory failed\n");
 	}
 	else
 	{
 		cc_notes_data = mmap(0,16384, PROT_READ, MAP_SHARED, notes_fd, 0);
 		if( cc_notes_data == MAP_FAILED ) {
-			printf("CC Map failed\n");
-			return;
+			printf("CC Notes Map failed\n");
 		}
 	}
 
 
 	cc_fd = shm_open("/cclights", O_RDONLY, 0666);
-	if (cc_fd == -1) {
+	if (cc_fd < 0) {
 		printf("shared memory failed\n");
-		return;
 	}
 	else
 	{
 		cc_lights_data = mmap(0,16384, PROT_READ, MAP_SHARED, cc_fd, 0);
 		if (cc_lights_data == MAP_FAILED) {
-			printf("CC Map failed\n");
-			return;
+			printf("CC Lights Map failed\n");
 		}
 	}
 
