@@ -11,7 +11,7 @@ int main( int argc, char ** argv )
 	if( argc != 3 )
 	{
 		fprintf( stderr, "Error: Use:  writeid3soruce [mp3 file] [op] < comment (current argc = %d)\n", argc );
-		fprintf( stderr, " where [op] is [r] for read comment and exit, [w] for write comment, and [y/Y] for youtube tab-output\n" );
+		fprintf( stderr, " where [op] is [r] for read comment and exit, [w] for write comment, and [y/Y/z/Z] for youtube tab or newline-output\n" );
 		exit(-10);
 	}
 
@@ -50,20 +50,22 @@ int main( int argc, char ** argv )
 		// Write the new tag to the file
 		set_tag(argv[2], tag);
 	}
-	else if( argv[1][0] == 'y' || argv[1][0] == 'Y' )
+	else if( argv[1][0] == 'y' || argv[1][0] == 'Y' || argv[1][0] == 'z' || argv[1][0] == 'Z' )
 	{
-		if( argv[1][0] == 'Y' ) printf( "%s\t", argv[2] );
+		char delim = (argv[1][0] == 'y')?'\t':'\n';
+		if( argv[1][0] == 'Y' ) printf( "%s%c", argv[2], delim );
 		ID3v2_frame* title = tag_get_title(tag);
 		ID3v2_frame* artist = tag_get_artist(tag);
 		if( title )
 		{
-			printf( "Music: \"");
+			printf( "\"");
 			ID3v2_frame_text_content* tc = parse_text_frame_content(title);
 			//printf( "[%d %d]\n", tc->data[0], tc->data[1] );
 			int i;
 			for( i = 0; i < tc->size; i++ )
 			{
-				if( tc->data[i] != -1 && tc->data[i] != -2 && tc->data[i] != 0 )
+				char ct = tc->data[i];
+				if( ct != -1 && ct != -2 && ct != 0 )
 					putchar( tc->data[i] );
 			}
 			//fwrite( tc->data, tc->size, 1, stdout );
@@ -78,14 +80,15 @@ int main( int argc, char ** argv )
 			int i;
 			for( i = 0; i < tc->size; i++ )
 			{
-				if( tc->data[i] != -1 && tc->data[i] != -2 && tc->data[i] != 0 )
+				char ct = tc->data[i];
+				if( ct != -1 && ct != -2 && ct != 0 )
 					putchar( tc->data[i] );
 			}
 
-			printf( "\t" );
+			printf( "%c", delim );
 		}
 		else
-			printf( "Unknown artist\t" );
+			printf( "Unknown artist%c", delim );
 
 		ID3v2_frame* comment_frame = tag_get_comment(tag); // Get the copyright message frame
 		if( comment_frame )
@@ -97,7 +100,7 @@ int main( int argc, char ** argv )
 				for( i = 0; i < tc->text->size; i++ )
 				{
 					if( tc->text->data[i] == '\n' )
-						putchar( '\t' );
+						putchar( delim );
 					else if( tc->text->data[i] == '\r' )
 						;
 					else if( tc->text->data[i] != -1 && tc->text->data[i] != -2 && tc->text->data[i] != 0 )
