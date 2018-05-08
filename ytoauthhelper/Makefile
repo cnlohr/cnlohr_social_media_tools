@@ -1,4 +1,4 @@
-all : yt_oauth_helper
+all : ytoauthhelper
 
 CNTOOLS:= \
 	../cntools/ssl/cnhttpclient.c \
@@ -11,7 +11,7 @@ CNTOOLS:= \
 LDFLAGS:=-lssl -lcrypto
 CFLAGS:=-g -I../cntools/ssl -I../jsmn -I../cntools/http -DMAX_HTTP_PATHLEN=500
 
-yt_oauth_helper : yt_oauth_helper.c $(CNTOOLS) $(JSMN)
+ytoauthhelper : ytoauthhelper.c $(CNTOOLS) $(JSMN)
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean :

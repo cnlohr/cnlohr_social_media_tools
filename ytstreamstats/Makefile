@@ -1,4 +1,4 @@
-all : yt_stream_stats
+all : ytstreamstats
 
 CNTOOLS:= \
 	../cntools/ssl/cnhttpclient.c \
@@ -8,7 +8,7 @@ CNTOOLS:= \
 LDFLAGS:=-lssl -lcrypto
 CFLAGS:=-g -I../cntools/ssl -I../jsmn
 
-yt_stream_stats : yt_stream_stats.c $(CNTOOLS) $(JSMN)
+ytstreamstats : ytstreamstats.c $(CNTOOLS) $(JSMN)
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean :
