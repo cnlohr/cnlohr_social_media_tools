@@ -1,6 +1,6 @@
 rundiscordposter.sh
-client_id.txt
-client_secret.txt
-oauthtoken.txt
+.client_id.txt
+.client_secret.txt
+.oauthtoken.txt
 
 

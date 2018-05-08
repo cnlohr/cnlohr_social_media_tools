@@ -33,7 +33,7 @@ int main( int argc, char ** argv )
 	req.URL = curlurlbase;
 
 	char oauthbear[8192];
-	FILE * f = fopen( "../oauthtoken.txt", "r" );
+	FILE * f = fopen( "../.oauthtoken.txt", "r" );
 	if( !f )
 	{
 		fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );

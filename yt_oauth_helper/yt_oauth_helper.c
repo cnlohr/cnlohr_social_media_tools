@@ -69,7 +69,7 @@ static void oauth2cb()
 
 	*endkey = 0;
 
-	FILE * f = fopen( "../oauthtoken.txt", "w" );
+	FILE * f = fopen( "../.oauthtoken.txt", "w" );
 	fprintf( f, "%s\n", foundkey );
 	
 	DataStartPacket();
@@ -77,7 +77,7 @@ static void oauth2cb()
 	EndTCPWrite( curhttp->socket );
 	DataStartPacket();
 
-	printf( "Keys written to ../oauthtoken.txt\n" );
+	printf( "Keys written to ../.oauthtoken.txt\n" );
 
 	curhttp->state = HTTP_WAIT_CLOSE;
 
@@ -136,7 +136,7 @@ int main( int argc, char ** argv )
 {
 	RunHTTP( port );
 
-	FILE * f = fopen( "../client_id.txt", "r" );
+	FILE * f = fopen( "../.client_id.txt", "r" );
 	if( !f )
 	{
 		fprintf( stderr, "Error: can't get client_id.txt\n" );
@@ -149,7 +149,7 @@ int main( int argc, char ** argv )
 	}
 
 
-	f = fopen( "../client_secret.txt", "r" );
+	f = fopen( "../.client_secret.txt", "r" );
 	if( !f )
 	{
 		fprintf( stderr, "Error: can't get client_secret.txt\n" );
@@ -173,7 +173,7 @@ int main( int argc, char ** argv )
 
 	exit( 0 );
 	missing_files:
-	printf( "Missing files ../client_secret.txt and/or ../client_id.txt.\n\
+	printf( "Missing files ../.client_secret.txt and/or ../.client_id.txt.\n\
 		Log into your API Dashboard.\n\
 		https://console.developers.google.com/\n\
 		Select your project and go to the youtube section.\n\
