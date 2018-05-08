@@ -34,6 +34,7 @@ struct NoteDists {
 
 void DrawColorChord()
 {
+
 	int freqbins = 1;
 
 #if 0
@@ -71,7 +72,7 @@ void DrawColorChord()
 		sx /= octaves * freqbins;
 		for( ; i < octaves * freqbins; i++ )
 		{
-			float rsat =  unfoldedbins[i]*20;
+			float rsat =  unfoldedbins[i]*10;
 			if( rsat > .8 ) rsat = .8;
 			CNFGColor( CCtoHEX( (i% freqbins)/(float) freqbins,1, rsat ) );
 			int rx = i * sx + CC_START_X;
@@ -119,6 +120,7 @@ void StartColorChord()
 		cc_dft_data = mmap(0,16384, PROT_READ, MAP_SHARED, dft_fd, 0);
 		if( cc_dft_data == MAP_FAILED ) {
 			printf("CC Map failed\n");
+			cc_dft_data = 0;
 		}
 	}
 
@@ -132,6 +134,7 @@ void StartColorChord()
 		cc_notes_data = mmap(0,16384, PROT_READ, MAP_SHARED, notes_fd, 0);
 		if( cc_notes_data == MAP_FAILED ) {
 			printf("CC Notes Map failed\n");
+			cc_notes_data = 0;
 		}
 	}
 
@@ -145,6 +148,7 @@ void StartColorChord()
 		cc_lights_data = mmap(0,16384, PROT_READ, MAP_SHARED, cc_fd, 0);
 		if (cc_lights_data == MAP_FAILED) {
 			printf("CC Lights Map failed\n");
+			cc_lights_data = 0;
 		}
 	}
 

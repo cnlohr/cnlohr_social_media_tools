@@ -132,16 +132,20 @@ void DrawTextOverlay()
 int update( struct ScriptStructure * cid )
 {
 	static int i;
-	CNFGClearTransparencyLevel();
-	CNFGClearFrame();
+	//CNFGClearTransparencyLevel();
+	//CNFGClearFrame();
 	CNFGHandleInput();
 
 	CNFGDrawToTransparencyMode( 1 );
-	CNFGTackRectangle( 0, WIN_Y, BRD_X, BRD_Y );
-	CNFGTackRectangle( WIN_X, 0, BRD_X, BRD_Y );
+	CNFGColor( 0xffffff );
+	CNFGTackRectangle( 0, 0, BRD_X, BRD_Y );
+	CNFGColor( 0x000000 );
+	CNFGTackRectangle( 0, 0, WIN_X, WIN_Y );
 
 	CNFGDrawToTransparencyMode( 0 );
 
+	CNFGColor( 0xfe101010 );
+	CNFGTackRectangle( 0, WIN_Y, WIN_X, BRD_Y );
 	DrawColorChord();
 	DrawFireworks();
 	DrawTextOverlay();
