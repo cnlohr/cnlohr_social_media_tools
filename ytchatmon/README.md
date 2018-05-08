@@ -2,6 +2,7 @@
 1. Set up a project here:
 	https://console.developers.google.com/cloud-resource-manager
 	 * Click: Enable APIs and get credentials like keys
+	 *  (or in the search bar at the top type youtube and select the v3 api)
 	 * Use youtube API v3
 	 * Click "Create credentials"
 	 * Select will be calling it from "Other UI"

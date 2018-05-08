@@ -199,7 +199,7 @@ int main( int argc, char ** argv )
 		struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
 
 		r->payload[r->payloadlen-1] = 0;
-
+		//Uncomment this if you aren't getting anything.
 		//printf( "PAYLOAD: %s\n", r->payload );
 		jsmn_init( &jsmnp );
 		int tottoks = jsmn_parse(&jsmnp, r->payload, r->payloadlen,

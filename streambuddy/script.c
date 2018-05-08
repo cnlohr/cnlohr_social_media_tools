@@ -124,7 +124,7 @@ void DrawTextOverlay()
 	CNFGColor( 0xffffff );
 	DrawFatTextAt( BIG_SIZE*23, WIN_Y+5, DEFAULT_SIZE, -1, -1, "%s", NowPlaying );
 
-	DrawFatTextAt( WIN_X + 4, CHAT_Y, DEFAULT_SIZE, BRD_X-WIN_X, BRD_Y - CHAT_Y-40, loremipsum );
+	DrawFatTextAt( WIN_X + 4, CHAT_Y, DEFAULT_SIZE, BRD_X-WIN_X, BRD_Y - CHAT_Y-40, "%s", loremipsum );
 	DrawFatTextAt( WIN_X - 180, WIN_Y+5, HUGE_SIZE, -1, -1, "8:88:88" );
 	DrawFatTextAt( WIN_X - 180, WIN_Y+5+45, BIG_SIZE, -1, -1, "88 WATCHING" );
 }
