@@ -1,22 +1,35 @@
 # various social media tools
 
-(Need to write todo)
+First, you will need your youtube oauth creds. 
+
+Log into your API Dashboard.
+ * https://console.developers.google.com/
+ * Select your project and go to the youtube v3 api section.
+ * Create new oauth credentials (or use existing)
+ * Select type for new oauth app to be "other"
+ * Get the CLIENT_ID and note the SECRET_KEY.
+ * Write them into `.client_id.txt` and `.client_secret.txt`.
+
+Next, get your oauth keys.
+```
+cd ytoauthhelper
+./ytoauthhelper
+```
+
+Follow on-screen prompts.  It should write your oauth key into `.oauthtoken.txt`.
 
 For example, you can do the following:
+```cd ytstreamstats
+./ytstreamstats [stream id]```
 
-./runytchatmon.sh EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU | tabformatter/tabformatter |  ./addtime.sh  | ./rundiscordposter.sh
-
-
-
-Also, we can post messages to livechats as a specific user but it needs oauth instead of an API key.  You can do that by first running the yt_oauth_helper.
-
+or
 ```
-cd yt_oauth_helper
-make
-./yt_oauth_helper
+./runytchatmon.sh EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU | tabformatter/tabformatter | tee chatlog.txt |  ./addtime.sh | ./rundiscordposter.sh
 ```
 
-
-Some other notes...
-	* Consider getting livechatid from yt_stream_stats...
+or
+```
+cd ytposter
+./ytposter [stream id] chat message
+```
 
