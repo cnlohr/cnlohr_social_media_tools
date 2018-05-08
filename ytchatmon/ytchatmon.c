@@ -161,29 +161,43 @@ int main( int argc, char ** argv )
 	jsmntok_t tokens[131072];
 	jsmn_parser jsmnp;
 
-	if( argc != 4 )
+	if( argc != 3 )
 	{
-		fprintf( stderr, "Error! Usage: ./chatmon [apikey] [livechatid] [show_history (0/1)]\n" );
+		fprintf( stderr, "Error! Usage: ./chatmon [livechatid] [show_history (0/1)]\n" );
 		fprintf( stderr, "Reads youtube livestream comments and sends to STDOUT. Format: [user]\\t[text]\\n\n" );
 		return -5;
 	}	
 
-	const char * livechatid = argv[2];//"EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
-	const char * apikey = argv[1];//"AIzaSyA1XpoUMNDFOx0W4-HjiUI1uiahdfe20lE";
+	const char * livechatid = argv[1];//"EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
 	const char * reqtype = "authorDetails,snippet";
-	show_history = atoi( argv[3] );
-	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&key=%s&",livechatid,apikey);
-	memset( argv[1], '-', strlen( argv[1] ) );
-	memset( argv[2], '-', strlen( argv[2] )  );
+	show_history = atoi( argv[2] );
+	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&",livechatid);
+
+//	memset( argv[1], '-', strlen( argv[1] ) );
+//	memset( argv[2], '-', strlen( argv[2] )  );
 
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
 	req.host = 0;
 	req.port = 0;
 	req.URL = curlurl;
-	req.AddedHeaders = "";
 	req.AuxData = 0;
 	req.AuxDataLength = 0;
+
+	char oauthbear[8192];
+	FILE * f = fopen( "../oauthtoken.txt", "r" );
+	if( !f )
+	{
+		fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
+		return -9;
+	}
+	fscanf( f, "%s", oauthbear );
+	fclose( f );	
+	char auxhead[8192];
+	sprintf( auxhead, "Authorization: Bearer %s", oauthbear );
+	req.AddedHeaders = auxhead;
+
+
 
 	while( 1 )
 	{
