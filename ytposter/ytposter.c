@@ -76,8 +76,7 @@ int main( int argc, char ** argv )
 				if( messagelen > mml ) break;				
 			}
 			if( messagelen > mml ) break;
-			message[messagelen++] = '\\';
-			message[messagelen++] = 'n';
+			message[messagelen++] = ' ';
 			message[messagelen] = 0;
 			line[0] = 0;
 			printf( "Emitting message length: %d\n", messagelen );
