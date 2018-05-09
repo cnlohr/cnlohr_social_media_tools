@@ -63,7 +63,7 @@ double sqrt( double f );
 double atan2( double a, double b );
 double atof( const char * s );
 
-const char * strstr( const char * needle, const char * haystack );
+char * strstr( const char * needle, const char * haystack );
 
 int printf(const char *format, ...);
 int sprintf(char * buf, const char *format, ...);

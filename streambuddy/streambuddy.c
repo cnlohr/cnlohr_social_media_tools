@@ -65,6 +65,10 @@ void PopFn( TCCEngine * tce )
 	TCCESetSym( tce, "shm_unlink", shm_unlink );
 	TCCESetSym( tce, "shm_open", shm_open );
 
+	TCCESetSym( tce, "strstr", strstr );
+	TCCESetSym( tce, "strchr", strchr );
+	TCCESetSym( tce, "strcpy", strcpy );
+
 }
 
 //Callbacks from CNFG
@@ -81,9 +85,9 @@ int main()
 	CNFGPrepareForTransparency();
 	CNFGSetupFullscreen( "test", 0 );
 	CNFGClearTransparencyLevel();
-	const char * additionalfiles[] = { "fireworks.h", "colorchord.h" };
+	const char * additionalfiles[] = { "fireworks.h", "colorchord.h", "nowplaying.h", "livechatmon.h", "streamstatus.h" };
 
-	TCCEngine * e = TCCECreate( "script.c", additionalfiles, 2, PopFn, tcceb );
+	TCCEngine * e = TCCECreate( "script.c", additionalfiles, 5, PopFn, tcceb );
 
 	while(1)
 	{

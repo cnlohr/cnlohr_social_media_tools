@@ -4,8 +4,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-//#define FULL_1080P
+#define FULL_1080P
 
+#define STREAMID   "16NSQORHRqU"
+#define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
 
 #ifdef FULL_1080P
 
@@ -16,8 +18,8 @@
 #define CHAT_Y 500
 #define DEFAULT_SIZE 4
 #define BIG_SIZE 8
-#define HUGE_SIZE 15
-
+#define HUGE_SIZE 10
+#define STATS_X 300
 
 #else
 
@@ -29,6 +31,7 @@
 #define DEFAULT_SIZE 3
 #define BIG_SIZE 4
 #define HUGE_SIZE 8
+#define STATS_X 180
 
 #endif
 
@@ -37,7 +40,11 @@ void DrawFatTextAt( int x, int y, int size, int width, int height, char * format
 int spawn_process_with_pipes( const char * execparam, char * const argv[], int pipefd[3] );
 int waitpid(pid_t pid, int *status, int options);
 int kill(pid_t pid, int sig);
-extern const char * loremipsum;
+char * strchr( const char *, char );
+
+
+//At bottom of code, send message to chat.
+void SendChatMessage( const char * message );
 
 struct ScriptStructure
 {
@@ -45,54 +52,25 @@ struct ScriptStructure
 	int compiles;
 };
 
+int chat_process;
+int chatpipes[3];
+
 og_thread_t songthread;
+og_thread_t chatthread;
+og_thread_t statusthread;
+
 struct ScriptStructure * id;
 int doquit;
-char NowPlaying[1024];
 
+#include "streamstatus.h"
+#include "livechatmon.h"
+#include "nowplaying.h"
 #include "fireworks.h"
 #include "colorchord.h"
 
 int init( struct ScriptStructure * cid )
 {
 	printf( "Init\n" );
-}
-
-void * RunNowPlaying( void * v )
-{
-	char tbuff[1024];
-	char * argv[3] = { "bash", "./currently_playing.sh", 0 };
-	int pipes[3];
-	int k = 0;
-	int ret;
-	while(!doquit)
-	{
-		//sprintf( NowPlaying, "Hello, world %d\n", k++ );
-		int procv = spawn_process_with_pipes( "bash", argv, pipes );
-		OGUSleep(100000);
-		if( procv < 1 ) goto closev;
-		fcntl( pipes[1], F_SETFL, O_NONBLOCK );
-		fcntl( pipes[2], F_SETFL, O_NONBLOCK );
-		int r = read( pipes[2], tbuff, 1024 );
-		if( r > 0 ) 
-		{
-			tbuff[r] = 0;
-			printf( "Error: %s\n", tbuff );
-		}
-		r = read( pipes[1], tbuff, 1024 );
-		if( r >= 0 ) tbuff[r] = 0;
-		else tbuff[0] = 0;
-
-//		if( procv > 0 ) kill( procv, -9 );
-		if( procv > 0 )	waitpid(procv, &ret, 0);
-		//snprintf( NowPlaying, sizeof(NowPlaying)-1, "%d %d %d - %s\n", r, k, ret, tbuff );
-		memcpy( NowPlaying, tbuff, r+1 );
-		k++;
-		closev:
-		close( pipes[0] );
-		close( pipes[1] );
-		close( pipes[2] );
-	}
 }
 
 int start( struct ScriptStructure * cid )
@@ -102,6 +80,8 @@ int start( struct ScriptStructure * cid )
 	id = cid;
 	StartColorChord();
 	songthread = OGCreateThread( RunNowPlaying, 0 );
+	chatthread = OGCreateThread( RunChatMon, 0 );
+	statusthread = OGCreateThread( RunStreamStatus, 0 );
 }
 
 int stop( struct ScriptStructure * cid )
@@ -109,7 +89,16 @@ int stop( struct ScriptStructure * cid )
 	doquit = 1;
 	StopColorChord();
 	OGJoinThread( songthread );
+	OGJoinThread( chatthread );
+	OGJoinThread( statusthread );
+
 	printf( "Stop\n" );
+
+	if( chat_process )
+	{
+		int ret;
+		waitpid(chat_process, &ret, 0);
+	}
 }
 
 void DrawCursor()
@@ -124,9 +113,14 @@ void DrawTextOverlay()
 	CNFGColor( 0xffffff );
 	DrawFatTextAt( BIG_SIZE*23, WIN_Y+5, DEFAULT_SIZE, -1, -1, "%s", NowPlaying );
 
-	DrawFatTextAt( WIN_X + 4, CHAT_Y, DEFAULT_SIZE, BRD_X-WIN_X, BRD_Y - CHAT_Y-40, "%s", loremipsum );
-	DrawFatTextAt( WIN_X - 180, WIN_Y+5, HUGE_SIZE, -1, -1, "8:88:88" );
-	DrawFatTextAt( WIN_X - 180, WIN_Y+5+45, BIG_SIZE, -1, -1, "88 WATCHING" );
+	DrawFatTextAt( WIN_X + 4, CHAT_Y, DEFAULT_SIZE, BRD_X-WIN_X-30, BRD_Y - CHAT_Y, "%s", ChatWindowText );
+
+	//DrawFatTextAt( WIN_X - STATS_X, WIN_Y+5, HUGE_SIZE, -1, -1, "?:??:??" );
+	DrawFatTextAt( WIN_X - STATS_X, WIN_Y+5+45, BIG_SIZE, -1, -1, 
+(CurrentViewers>0)?"%d WATCHING":"STREAM STATUS ERROR", CurrentViewers );
+
+	//printf( "%f\n", OGGetAbsoluteTime() );
+	
 }
 
 int update( struct ScriptStructure * cid )
@@ -144,8 +138,10 @@ int update( struct ScriptStructure * cid )
 
 	CNFGDrawToTransparencyMode( 0 );
 
-	CNFGColor( 0xfe101010 );
+	CNFGColor( 0x0202020 );
 	CNFGTackRectangle( 0, WIN_Y, WIN_X, BRD_Y );
+	CNFGTackRectangle( WIN_X, 0, BRD_X, BRD_Y );
+
 	DrawColorChord();
 	DrawFireworks();
 	DrawTextOverlay();
@@ -178,4 +174,31 @@ void handleMotionCB( struct ScriptStructure * cid, int x, int y, int mask )
 
 
 
-const char * loremipsum = "Lorem ipsum dolor sit amet, ad sea modo vidisse interesset, vis elit mentitum at. Sea utroque accusam no, debet audire mei ad. Agam eius constituto duo ad, vix euismod accusata inciderint ad, iusto libris audire at nam. Facilis invidunt argumentum te eum, pro an illud reque.\nEt sit bonorum ceteros, ut enim vitae nonumy sed, mei ei sonet eloquentiam. Ius errem consequuntur id, munere feugait accusam vix ea. Dolore bonorum vel eu. Per magna decore dolorem te.\nMea cu illum oratio nullam, et causae mentitum mei, per at facer fierent adolescens. No pro pericula complectitur, usu no integre aliquid scripserit, nam eu purto euismod maluisset. Tamquam oportere ex pro, graeci dolores verterem vim eu, nostro disputando at sed. Modo dolorum nusquam an eos. Ad dicam iracundia mediocritatem vim, ponderum disputando in nec. No brute fierent eam, eam ei dolor singulis voluptatum. Ad mundi ornatus delectus eos, melius lucilius senserit qui eu, verear verterem id mei.\nMei in latine luptatum, sit mollis timeam accusata ea. Tota sensibus eam ne, has discere eleifend expetenda eu. Vocent suscipit ullamcorper te eum. Cum ad ceteros suscipiantur, error sapientem sit an, graece menandri vix te. Id his probo voluptua dissentiunt, usu possit sententiae voluptatibus ex. Debitis detracto iudicabit qui te, eu cum odio vivendum urbanitas, ne quo adipiscing appellantur. Aliquid perfecto percipitur nec at, dicunt prompta et vis.\nSale adhuc et eam, te minim nobis mentitum has. Nibh essent an duo, dolores principes in eam. No scripta dignissim hendrerit nam, perfecto conceptam ad mei, vis ex prodesset definiebas honestatis. Pro novum neglegentur te.";
+
+
+
+void SendChatMessage( const char * message )
+{
+	int chat_pipes[3];
+	//Close existing process if running.
+	if( chat_process )
+	{
+		int ret;
+		waitpid(chat_process, &ret, 0);
+	}
+	char * argv[3] = { "../ytposter/ytposter", LIVECHATID, 0 };
+	chat_process = spawn_process_with_pipes( "../ytposter/ytposter", argv, chat_pipes );
+	if( chat_process > 0 )
+	{
+		write( chat_pipes[0], message, strlen( message ) );
+		OGUSleep(10000);
+	}
+	close( chat_pipes[0] );
+	close( chat_pipes[1] );
+	close( chat_pipes[2] );
+}
+
+
+
+
+

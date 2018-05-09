@@ -112,7 +112,7 @@ void DrawColorChord()
 void StartColorChord()
 {
 	dft_fd = shm_open("/ccdft", O_RDONLY, 0666);
-	if (cc_fd < 0 ) {
+	if (dft_fd < 0 ) {
 		printf("shared memory failed\n");
 	}
 	else

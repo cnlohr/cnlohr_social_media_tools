@@ -21,6 +21,8 @@ cd ytoauthhelper
 
 Follow on-screen prompts.  It should write your oauth key into `.oauthtoken.txt`.
 
+Find your video video id by looking on the livechat popout, i.e. 16NSQORHRqU
+
 For example, you can do the following:
 ```cd ytstreamstats
 ./ytstreamstats [stream id]```
