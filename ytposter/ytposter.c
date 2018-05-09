@@ -14,7 +14,7 @@ int main( int argc, char ** argv )
 	jsmntok_t tokens[131072];
 	jsmn_parser jsmnp;
 
-	if( argc != 3 )
+	if( argc < 2 )
 	{
 		fprintf( stderr, "Error! Usage: ./chatmon [livechatid] [message]\n" );
 		return -5;
@@ -47,6 +47,47 @@ int main( int argc, char ** argv )
 	req.AddedHeaders = auxhead;
 	char AuxData[8192];    //For Websockets, this is the "Origin" URL.  Otherwise, it's Post data.
 
+	char * message;
+	if( argc < 3 )
+	{
+		int mml = 16384;
+		message = malloc( mml+4 );
+		int messagelen = 0;
+		char line[8192];
+		line[0] = 0;
+		while ((fgets(line, sizeof line, stdin) != NULL) && ( line[0]  && line[0] != '\n' ) )
+		{
+			int linelen = strlen( line );
+			printf( "GOT line len: %d\n", linelen );
+			int i;
+			for( i = 0; i < linelen; i++ )
+			{
+				char c = line[i];
+				if( c == 9 ) c = ' ';
+				else if( c < 32 ) continue;
+				else if( c == '\"' || c == '\\' )
+				{
+					message[messagelen++] = '\\';
+					message[messagelen++] = c;
+				}
+				else
+					message[messagelen++] = c;
+
+				if( messagelen > mml ) break;				
+			}
+			if( messagelen > mml ) break;
+			message[messagelen++] = '\\';
+			message[messagelen++] = 'n';
+			message[messagelen] = 0;
+			line[0] = 0;
+			printf( "Emitting message length: %d\n", messagelen );
+			puts( message );
+		}
+	}
+	else
+	{
+		message = argv[2];
+	}
 
 	snprintf( AuxData, sizeof( AuxData ) - 1, "{\
   \"snippet\": { \
@@ -56,11 +97,11 @@ int main( int argc, char ** argv )
       \"messageText\": \"%s\" \
     } \
   } \
-}", livechatid, argv[2] );
+}", livechatid, message );
 
 
-	memset( argv[1], '-', strlen( argv[1] ) );
-	memset( argv[2], '-', strlen( argv[2] ) );
+//	memset( argv[1], '-', strlen( argv[1] ) );
+//	memset( argv[2], '-', strlen( argv[2] ) );
 
 	req.AuxData = AuxData;
 	req.AuxDataLength = strlen( AuxData );
