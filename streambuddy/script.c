@@ -63,10 +63,10 @@ struct ScriptStructure * id;
 int doquit;
 
 #include "streamstatus.h"
-#include "livechatmon.h"
 #include "nowplaying.h"
-#include "fireworks.h"
 #include "colorchord.h"
+#include "fireworks.h"
+#include "livechatmon.h"
 
 int init( struct ScriptStructure * cid )
 {
@@ -143,9 +143,9 @@ int update( struct ScriptStructure * cid )
 	CNFGTackRectangle( WIN_X, 0, BRD_X, BRD_Y );
 
 	DrawColorChord();
-	DrawFireworks();
 	DrawTextOverlay();
 	DrawCursor();
+	DrawFireworks();
 
 	CNFGSwapBuffers();
 	OGUSleep( 30000 );
@@ -161,7 +161,7 @@ void handleKeyCB( struct ScriptStructure * cid, int keycode, int bDown )
 void handleButtonCB( struct ScriptStructure * cid, int x, int y, int button, int bDown )
 {
 	if( bDown )
-		MakeFirework( x, y );
+		MakeFirework( x, y, 1.0 );
 //	printf( "Button: %d %d\n", button, bDown );
 }
 

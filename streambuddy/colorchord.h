@@ -7,7 +7,7 @@ int notes_fd;
 uint8_t * cc_lights_data;
 uint8_t * cc_dft_data;
 uint8_t * cc_notes_data;
-
+int ccoctaves;
 
 #define CC_START_X 0
 #define CC_END_X WIN_X
@@ -31,11 +31,13 @@ struct NoteDists {
 	unsigned char taken; //Is distribution associated with any notes?
 };
 
+struct NoteDists * ndd;
+
+int freqbins = 1;
 
 void DrawColorChord()
 {
 
-	int freqbins = 1;
 
 #if 0
 	if( cc_lights_data )
@@ -63,14 +65,14 @@ void DrawColorChord()
 #endif
 	if( cc_dft_data )
 	{
-		int octaves = ((int*)cc_dft_data)[0];
+		ccoctaves = ((int*)cc_dft_data)[0];
 		freqbins = ((int*)cc_dft_data)[1];
 		float * foldedbins = &((float*)cc_dft_data)[2];
 		float * unfoldedbins = &((float*)cc_dft_data)[2+freqbins];
 		int i = 0;
 		float sx = CC_END_X-CC_START_X;
-		sx /= octaves * freqbins;
-		for( ; i < octaves * freqbins; i++ )
+		sx /= ccoctaves * freqbins;
+		for( ; i < ccoctaves * freqbins; i++ )
 		{
 			float rsat =  unfoldedbins[i]*10;
 			if( rsat > .8 ) rsat = .8;
@@ -84,7 +86,7 @@ void DrawColorChord()
 	if( cc_notes_data )
 	{
 		int notespop = ((int*)cc_notes_data)[0];
-		struct NoteDists * nd = (struct NoteDists *)(&(((int*)cc_notes_data)[1]));
+		ndd = (struct NoteDists *)(&(((int*)cc_notes_data)[1]));
 	}
 
 	if( cc_lights_data )
