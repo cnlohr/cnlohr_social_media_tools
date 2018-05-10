@@ -61,6 +61,19 @@ void * RunChatMon( void * v )
 		}
 		bufferout[ro] = 0;
 
+		int end = sizeof( ChatWindowText );
+		for( i = 0; i < end - ro-1; i++ )
+		{
+			ChatWindowText[i] = ChatWindowText[i+ro];
+		}
+
+		int j = 0;
+		memcpy( ChatWindowText+i, bufferout, ro );
+		if( !already_init ) continue;
+
+
+
+
 		if( already_init && strstr( bufferout, "boom" ) )
 		{
 			MakeFirework( rand()%(BRD_X - WIN_X) + WIN_X,  rand()%(BRD_Y - 400) + 400, 1.0 );
@@ -70,14 +83,7 @@ void * RunChatMon( void * v )
 			MakeFirework( rand()%(BRD_X - WIN_X) + WIN_X,  rand()%(BRD_Y - 400) + 400, -1.0 );
 		}
 
-		int end = sizeof( ChatWindowText );
-		for( i = 0; i < end - ro-1; i++ )
-		{
-			ChatWindowText[i] = ChatWindowText[i+ro];
-		}
 
-		int j = 0;
-		memcpy( ChatWindowText+i, bufferout, ro );
 		//printf( "%d %d %d,%s\n", ChatWindowText[i], i, r, ChatWindowText );
 		OGUSleep( 100000 );
 	}
