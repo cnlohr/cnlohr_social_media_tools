@@ -27,9 +27,11 @@ void * RunChatMon( void * v )
 			sprintf( ChatWindowText, "Error: Fault reading from chat window file.\n" );
 			break;
 		}
+
 		if( r == 0 )
 		{
 			already_init = 1;
+			OGUSleep( 100000 );
 			continue;
 		}
 
@@ -76,11 +78,13 @@ void * RunChatMon( void * v )
 
 		if( already_init && strstr( bufferout, "boom" ) )
 		{
-			MakeFirework( rand()%(BRD_X - WIN_X) + WIN_X,  rand()%(BRD_Y - 400) + 400, 1.0 );
+			srand( OGGetAbsoluteTime()*1000 );
+			MakeFirework( rand()%(BRD_X),  rand()%(BRD_Y - 200) + 100, 1.0 );
 		}
 		if( already_init && strstr( bufferout, "moob" ) )
 		{
-			MakeFirework( rand()%(BRD_X - WIN_X) + WIN_X,  rand()%(BRD_Y - 400) + 400, -1.0 );
+			srand( OGGetAbsoluteTime()*1000 );
+			MakeFirework( rand()%(BRD_X),  rand()%(BRD_Y - 200) + 100, -1.0 );
 		}
 
 

@@ -30,7 +30,7 @@ struct NoteDists {
 	float sigma; //Sigma of normal distribution
 	unsigned char taken; //Is distribution associated with any notes?
 };
-
+int number_ndd;
 struct NoteDists * ndd;
 
 int freqbins = 1;
@@ -85,7 +85,7 @@ void DrawColorChord()
 
 	if( cc_notes_data )
 	{
-		int notespop = ((int*)cc_notes_data)[0];
+		number_ndd = ((int*)cc_notes_data)[0];
 		ndd = (struct NoteDists *)(&(((int*)cc_notes_data)[1]));
 	}
 

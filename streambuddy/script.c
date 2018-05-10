@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define FULL_1080P
+//#define FULL_1080P
 
 #define STREAMID   "16NSQORHRqU"
 #define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
@@ -42,6 +42,16 @@ int waitpid(pid_t pid, int *status, int options);
 int kill(pid_t pid, int sig);
 char * strchr( const char *, char );
 
+//Opengl stuff
+void glColor4f( float r, float g, float b, float a );
+void glEnable (int cap);
+void glBlendFunc (int sfactor, int dfactor);
+#define GL_BLEND				0x0BE2
+#define GL_ONE_MINUS_DST_ALPHA			0x0305
+#define GL_DST_ALPHA				0x0304
+#define GL_SRC_ALPHA				0x0302
+#define GL_ONE_MINUS_SRC_ALPHA			0x0303
+
 
 //At bottom of code, send message to chat.
 void SendChatMessage( const char * message );
@@ -70,6 +80,7 @@ int doquit;
 
 int init( struct ScriptStructure * cid )
 {
+	CNFGClearFrame();
 	printf( "Init\n" );
 }
 
@@ -125,22 +136,31 @@ void DrawTextOverlay()
 
 int update( struct ScriptStructure * cid )
 {
+	short sw, sh;
+	CNFGGetDimensions( &sw, &sh );
 	static int i;
 	//CNFGClearTransparencyLevel();
 	//CNFGClearFrame();
 	CNFGHandleInput();
 
 	CNFGDrawToTransparencyMode( 1 );
+	CNFGColor( 0x000000 );
+	CNFGTackRectangle( 0, 0, sw, sh );
 	CNFGColor( 0xffffff );
 	CNFGTackRectangle( 0, 0, BRD_X, BRD_Y );
 	CNFGColor( 0x000000 );
 	CNFGTackRectangle( 0, 0, WIN_X, WIN_Y );
-
 	CNFGDrawToTransparencyMode( 0 );
 
 	CNFGColor( 0x0202020 );
+	glEnable (GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f( .1, .1, .1,  1.0 );
 	CNFGTackRectangle( 0, WIN_Y, WIN_X, BRD_Y );
+	glColor4f( .1, .1, .1,  .3 );
 	CNFGTackRectangle( WIN_X, 0, BRD_X, BRD_Y );
+
+	glColor4f( .1, .1, .1,  1.0 );
 
 	DrawColorChord();
 	DrawTextOverlay();
@@ -148,7 +168,7 @@ int update( struct ScriptStructure * cid )
 	DrawFireworks();
 
 	CNFGSwapBuffers();
-	OGUSleep( 30000 );
+	OGUSleep( 16000 );
 	//printf( "Update: %d %d\n", cid->compiles, 1 );
 }
 
@@ -170,10 +190,6 @@ void handleMotionCB( struct ScriptStructure * cid, int x, int y, int mask )
 	cid->lastx = x;
 	cid->lasty = y;
 }
-
-
-
-
 
 
 
