@@ -1,3 +1,12 @@
+//Copyright <>< Charles Lohr
+//This file may be licensed under the MIT/x11 or NewBSD License.
+
+
+//Based on guide here: https://developers.google.com/youtube/v3/guides/auth/client-side-web-apps
+//Geared around offline mode: https://developers.google.com/identity/protocols/OAuth2WebServer#offline
+
+//TODO: also disable tokens... https://accounts.google.com/o/oauth2/revoke 
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -10,8 +19,8 @@
 #include <cnhttp.h>
 
 int port = 8089;
-	char client_secret[8192];
-	char client_id[8192];
+char client_secret[8192];
+char client_id[8192];
 char oauthresp[1024];
 volatile int oauthrespgot;
 
@@ -57,6 +66,8 @@ static void oauth2cb()
 		exit( -5 );
 	}
 
+	printf( "PAYLOAD: %s\n", r->payload );
+
 	char * foundkey = strstr( r->payload, "access_token" );
 	char * endkey;
 	if( foundkey ) foundkey = strchr( foundkey+14, '\"' );
@@ -67,17 +78,36 @@ static void oauth2cb()
 		exit( -18 );
 	}
 
+	char * foundrenew = strstr( r->payload, "refresh_token" );
+	char * endrenew;
+	if( foundrenew ) foundrenew = strchr( foundrenew+16, '\"' );
+	if( foundrenew ) endrenew = strchr( ++foundrenew, '\"' );
+	if( !foundrenew || !endrenew )
+	{
+		fprintf( stderr, "Error: can't find token.\n" );
+		exit( -18 );
+	}
 	*endkey = 0;
+	*endrenew = 0;
+
 
 	FILE * f = fopen( "../.oauthtoken.txt", "w" );
 	fprintf( f, "%s\n", foundkey );
-	
+	fclose( f );
+
+
+	f = fopen( "../.oauthrenew.txt", "w" );
+	fprintf( f, "%s\n", foundrenew );
+	fclose( f );
+
+
 	DataStartPacket();
 	PushString( "<HTML><BODY ONLOAD=\"window.open('','_parent','');window.close();\">Auth ok.  You can close this page.</BODY></HTML>" );
 	EndTCPWrite( curhttp->socket );
 	DataStartPacket();
 
-	printf( "Keys written to ../.oauthtoken.txt\n" );
+	printf( "Key written to ../.oauthtoken.txt\n" );
+	printf( "Renew written to ../.oauthrenew.txt\n" );
 
 	curhttp->state = HTTP_WAIT_CLOSE;
 
@@ -183,7 +213,7 @@ int main( int argc, char ** argv )
 \n\
 		Get the CLIENT_ID and note the SECRET_KEY.\n\
 \n\
-		Write them into ../client_id.txt and../client_secret.txt.\n" );
+		Write them into ../.client_id.txt and../.client_secret.txt.\n" );
 	return -9;
 }
 
