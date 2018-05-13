@@ -12,15 +12,16 @@
 #include <stdlib.h>
 #include <cnsslclient.h>
 #include <cnhttpclient.h>
-#include <jsmn.h>
 #include <unistd.h>
 #include <string.h>
 #include <http_bsd.h>
 #include <cnhttp.h>
+#include <osg_aux.h>
+
 
 int port = 8089;
-char client_secret[8192];
-char client_id[8192];
+char * client_secret;
+char * client_id;
 char oauthresp[1024];
 volatile int oauthrespgot;
 
@@ -165,32 +166,12 @@ void HTTPCustomStart( )
 int main( int argc, char ** argv )
 {
 	RunHTTP( port );
+	FILE * f;
 
-	FILE * f = fopen( "../.client_id.txt", "r" );
-	if( !f )
-	{
-		fprintf( stderr, "Error: can't get client_id.txt\n" );
-		goto missing_files;
-	}
-	if( fscanf( f, "%s\n", client_id ) != 1 )
-	{
-		fprintf( stderr, "Error: can't understand client_id.txt\n" );
-		goto missing_files;
-	}
-
-
-	f = fopen( "../.client_secret.txt", "r" );
-	if( !f )
-	{
-		fprintf( stderr, "Error: can't get client_secret.txt\n" );
-		goto missing_files;
-	}
-
-	if( fscanf( f, "%s\n", client_secret ) != 1 )
-	{
-		fprintf( stderr, "Error: can't understand client_secret.txt\n" );
-		goto missing_files;
-	}
+	client_id = OSGLineFromFile( f = fopen( "../.client_id.txt", "r" ) );     if( f ) fclose( f );
+	client_secret = OSGLineFromFile( fopen( "../.client_secret.txt", "r" ) ); if( f ) fclose( f );
+	if( !client_id ) { fprintf( stderr, "Error opening client_id.txt\n" ); return -1; }
+	if( !client_secret ) { fprintf( stderr, "Error opening client_secret.txt\n" ); return -1; }
 	
 	printf( "Please visit:\n\nhttps://accounts.google.com/o/oauth2/auth?client_id=%s&scope=https://www.googleapis.com/auth/youtube&response_type=code&access_type=offline&redirect_uri=http%%3A%%2F%%2Flocalhost:%d%%2Fd%%2foauth2callback\n", client_id, port );
 

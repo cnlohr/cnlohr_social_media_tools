@@ -5,6 +5,7 @@
 #include <fcntl.h>
 
 //#define FULL_1080P
+//#define RES_1366x768
 
 #define STREAMID   "16NSQORHRqU"
 #define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
@@ -21,10 +22,22 @@
 #define HUGE_SIZE 10
 #define STATS_X 300
 
+#elif defined( RES_1366x768 )
+
+#define BRD_X 1366
+#define BRD_Y 742
+#define WIN_X 1024
+#define WIN_Y 666
+#define CHAT_Y 300
+#define DEFAULT_SIZE 3
+#define BIG_SIZE 4
+#define HUGE_SIZE 8
+#define STATS_X 180
+
 #else
 
 #define BRD_X 1280
-#define BRD_Y 710
+#define BRD_Y 720
 #define WIN_X 960
 #define WIN_Y 630
 #define CHAT_Y 300

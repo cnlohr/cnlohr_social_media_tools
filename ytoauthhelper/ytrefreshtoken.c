@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <osg_aux.h>
 
 static int LoadFileLineIntoBuffer( const char * folder_prefix, const char * file, char * buffer, int buffersize )
 {
@@ -26,7 +27,7 @@ static int LoadFileLineIntoBuffer( const char * folder_prefix, const char * file
 	return i;
 }
 
-int RefreshOAuthToken( const char * folder_prefix)
+int YTRefreshOAuthToken( const char * folder_prefix)
 {
 	char client_secret[2048];
 	char client_id[2048];
@@ -85,7 +86,16 @@ int RefreshOAuthToken( const char * folder_prefix)
 #ifdef MAKE_EXE
 int main()
 {
-	return RefreshOAuthToken( ".." );
+	int ret = YTRefreshOAuthToken( ".." );
+	if( ret == 0 )
+	{
+		printf( "Refresh successful.\n" );
+	}
+	else
+	{
+		printf( "Refresh failed.\n" );
+	}
+	return ret;
 }
 #endif
 
