@@ -67,7 +67,7 @@ static void oauth2cb()
 		exit( -5 );
 	}
 
-	printf( "PAYLOAD: %s\n", r->payload );
+	//printf( "PAYLOAD: %s\n", r->payload );
 
 	char * foundkey = strstr( r->payload, "access_token" );
 	char * endkey;
