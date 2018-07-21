@@ -35,10 +35,7 @@ int YTPostChat( const char * livechatid, const char * message )
 
 	req.AddedHeaders = auxhead;
 
-	int ml = 
 	char AuxData[8192];    //For Websockets, this is the "Origin" URL.  Otherwise, it's Post data.
-	char messageout[
-
 
 	snprintf( AuxData, sizeof( AuxData ) - 1, "{\
   \"snippet\": { \
@@ -77,8 +74,6 @@ int YTPostChat( const char * livechatid, const char * message )
 
 int main( int argc, char ** argv )
 {
-	jsmntok_t tokens[131072];
-	jsmn_parser jsmnp;
 
 	if( argc < 2 )
 	{
@@ -86,7 +81,7 @@ int main( int argc, char ** argv )
 		return -5;
 	}
 
-	const char * message;
+	char * message;
 
 	if( argc < 3 )
 	{

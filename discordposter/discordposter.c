@@ -63,9 +63,7 @@ int main( int argc, char ** argv )
 			len = snprintf( discorddata, sizeof(discorddata), "{ \"embeds\": [{\"title\":\"%s\", \"description\": \"%s\", \"type\": \"rich\", \"color\":\"65535\"}] }", author, text );
 		}
 
-        fprintf( stderr, "Sending: \"%s\"\n", discorddata );
-        fprintf( stderr, "URL: \"%s\"\n", discordurl );
-		sprintf( addedh, "Content-Type: application/json", len );
+		sprintf( addedh, "Content-Type: application/json" );
 		reqdiscord.AuxDataLength = len;
 		struct cnhttpclientresponse * r = CNHTTPClientTransact( &reqdiscord );
 		if( r->payloadlen > 1 )

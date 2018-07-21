@@ -6,7 +6,7 @@ CNTOOLS:= \
 	../cntools/ssl/cnsslclient.c
 
 LDFLAGS:=-lssl -lcrypto
-CFLAGS:=-g -I../cntools/ssl -I../jsmn
+CFLAGS:=-g -I../cntools/ssl -I../jsmn -DMAKE_EXE
 
 ytposter : ytposter.c $(CNTOOLS) $(JSMN)
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../addtimestamp/addtimestamp "%H:%M:%S"
+addtimestamp/addtimestamp "%H:%M:%S"

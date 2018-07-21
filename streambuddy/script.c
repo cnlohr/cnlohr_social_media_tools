@@ -4,10 +4,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-//#define FULL_1080P
+#define FULL_1080P
 //#define RES_1366x768
 
-#define STREAMID   "16NSQORHRqU"
+#define STREAMID   "qbdYbQEhIqc"
 #define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
 
 #ifdef FULL_1080P
@@ -156,11 +156,13 @@ int update( struct ScriptStructure * cid )
 	//CNFGClearFrame();
 	CNFGHandleInput();
 
+#define RIGHTTOP 480
+
 	CNFGDrawToTransparencyMode( 1 );
 	CNFGColor( 0x000000 );
 	CNFGTackRectangle( 0, 0, sw, sh );
 	CNFGColor( 0xffffff );
-	CNFGTackRectangle( 0, 0, BRD_X, BRD_Y );
+	CNFGTackRectangle( 0, RIGHTTOP, BRD_X, BRD_Y );
 	CNFGColor( 0x000000 );
 	CNFGTackRectangle( 0, 0, WIN_X, WIN_Y );
 	CNFGDrawToTransparencyMode( 0 );

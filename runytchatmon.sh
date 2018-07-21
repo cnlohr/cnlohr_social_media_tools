@@ -1,3 +1,4 @@
 #!/bin/bash
 
-./ytchatmon/ytchatmon $1 0
+cd ytchatmon
+./ytchatmon $1 0
