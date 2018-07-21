@@ -7,7 +7,7 @@
 #define FULL_1080P
 //#define RES_1366x768
 
-#define STREAMID   "qbdYbQEhIqc"
+#define STREAMID   "FtXkjPcmENA"
 #define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
 
 #ifdef FULL_1080P
