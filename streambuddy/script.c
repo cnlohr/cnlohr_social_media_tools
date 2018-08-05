@@ -7,7 +7,7 @@
 #define FULL_1080P
 //#define RES_1366x768
 
-#define STREAMID   "FtXkjPcmENA"
+#define STREAMID   "Ij1oqvcllUs"
 #define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
 
 #ifdef FULL_1080P
@@ -139,7 +139,7 @@ void DrawTextOverlay()
 
 	DrawFatTextAt( WIN_X + 4, CHAT_Y, DEFAULT_SIZE, BRD_X-WIN_X-30, BRD_Y - CHAT_Y, "%s", ChatWindowText );
 
-	//DrawFatTextAt( WIN_X - STATS_X, WIN_Y+5, HUGE_SIZE, -1, -1, "?:??:??" );
+	DrawFatTextAt( 780, WIN_Y+5, 4, -1, -1, "(1) Recap\n(2) Figure out how to open lighthouse\n(3) Use FX3 to record data" );
 	DrawFatTextAt( WIN_X - STATS_X, WIN_Y+5+45, BIG_SIZE, -1, -1, 
 (CurrentViewers>0)?"%d WATCHING":"STREAM STATUS ERROR", CurrentViewers );
 

@@ -11,9 +11,9 @@ LDFLAGS:=-lssl -lcrypto
 CFLAGS:=-g -I../cntools/ssl -I../jsmn
 
 ytchatmon : ytchatmon.c $(CNTOOLS) $(JSMN)
-	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS) -DBUILD_EXE -O0 -g
 
 clean :
-	rm -rf *.o *~ chatmon
+	rm -rf *.o *~ ytchatmon
 
 
