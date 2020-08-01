@@ -1,5 +1,10 @@
 # various social media tools
 
+## Some programs you'll need to install.
+
+```
+sudo apt-get install libssl1.0-dev
+```
 
 ## Youtube API stuff
 
@@ -37,4 +42,6 @@ or
 cd ytposter
 ./ytposter [stream id] chat message
 ```
+
+
 
