@@ -8,6 +8,12 @@
 #include <sys/mman.h>
 #include <sys/stat.h>        /* For mode constants */
 #include <fcntl.h>   
+#include <sys/wait.h>
+#include <math.h>
+#include <GL/gl.h>
+
+#include <signal.h>
+#include <sys/types.h>
 
 unsigned char * gtcceb;
 
@@ -69,6 +75,40 @@ void PopFn( TCCEngine * tce )
 	TCCESetSym( tce, "strchr", strchr );
 	TCCESetSym( tce, "strcpy", strcpy );
 
+	TCCESetSym( tce, "rand", rand );
+
+
+	TCCESetSym( tce, "pthread_join", pthread_join );
+	TCCESetSym( tce, "free", free );
+	TCCESetSym( tce, "fcntl", fcntl );
+	TCCESetSym( tce, "read", read );
+	TCCESetSym( tce, "kill", kill );
+	TCCESetSym( tce, "waitpid", waitpid );
+	TCCESetSym( tce, "atoi", atoi );
+	TCCESetSym( tce, "close", close );
+	TCCESetSym( tce, "strcmp", strcmp );
+	TCCESetSym( tce, "memcpy", memcpy );
+	TCCESetSym( tce, "fmodf", fmodf );
+	TCCESetSym( tce, "fmod", fmod );
+	TCCESetSym( tce, "srand", srand );
+	TCCESetSym( tce, "sin", sin );
+	TCCESetSym( tce, "glColor4f", glColor4f );
+	TCCESetSym( tce, "sqrt", sqrt );
+	TCCESetSym( tce, "cos", cos );
+	TCCESetSym( tce, "qsort", qsort );
+	TCCESetSym( tce, "open", open );
+	TCCESetSym( tce, "sprintf", sprintf );
+	TCCESetSym( tce, "glEnable", glEnable );
+
+
+
+	TCCESetSym( tce, "glBlendFunc", glBlendFunc );
+	TCCESetSym( tce, "write", write );
+	TCCESetSym( tce, "strlen", strlen );
+	TCCESetSym( tce, "usleep", usleep );
+	TCCESetSym( tce, "gettimeofday", gettimeofday );
+	TCCESetSym( tce, "malloc", malloc );
+	TCCESetSym( tce, "pthread_create", pthread_create );
 }
 
 //Callbacks from CNFG

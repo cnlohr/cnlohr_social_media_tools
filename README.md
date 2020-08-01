@@ -29,19 +29,30 @@ Follow on-screen prompts.  It should write your oauth key into `.oauthtoken.txt`
 Find your video video id by looking on the livechat popout, i.e. 16NSQORHRqU
 
 For example, you can do the following:
-```cd ytstreamstats
-./ytstreamstats [stream id]```
+
+```
+cd ytstreamstats
+./ytstreamstats [stream id]
+```
 
 or
+
 ```
 ./runytchatmon.sh EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU | tabformatter/tabformatter | tee chatlog.txt |  ./addtime.sh | ./rundiscordposter.sh
 ```
 
 or
+
 ```
 cd ytposter
 ./ytposter [stream id] chat message
 ```
 
 
+Once these tools are running, you can use streambuddy.
+
+```
+cd streambuddy
+./streambuddy
+```
 
