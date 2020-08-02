@@ -13,7 +13,23 @@ int YTPostChat( const char * livechatid, const char * message )
 
 	const char * reqtype = "snippet";
 
+	char apikey[8192];
+	int uses_api_key = 0;
+
 	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/liveChat/messages?part=%s",reqtype);
+
+	if( 0 )
+	{
+		FILE * f = fopen( "../.ytapikey.txt", "r" );
+		if(f)
+		{
+			fscanf( f, "%8100s", apikey );
+			fclose( f );	
+			uses_api_key = 1;
+		}
+		sprintf( curlurlbase + strlen(curlurlbase), "&key=%s",apikey);
+	}
+
 
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
@@ -21,17 +37,24 @@ int YTPostChat( const char * livechatid, const char * message )
 	req.port = 0;
 	req.URL = curlurlbase;
 
-	char oauthbear[8192];
-	FILE * f = fopen( "../.oauthtoken.txt", "r" );
-	if( !f )
+	if( !uses_api_key )
 	{
-		fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
-		return -9;
-	}
-	fscanf( f, "%s", oauthbear );
-	fclose( f );	
+		char oauthbear[8192];
+		FILE * f = fopen( "../.oauthtoken.txt", "r" );
+		if( !f )
+		{
+			fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
+			return -9;
+		}
+		fscanf( f, "%s", oauthbear );
+		fclose( f );	
 
-	sprintf( auxhead, "Authorization: Bearer %s\r\nContent-Type: application/json; charset=UTF-8", oauthbear );
+		sprintf( auxhead, "Authorization: Bearer %s\r\nContent-Type: application/json; charset=UTF-8", oauthbear );
+	}
+	else
+	{
+		fprintf( stderr, "WARNING: API KEY NOT VALID FOR SENDING CHAT\n" );
+	}
 
 	req.AddedHeaders = auxhead;
 
@@ -47,6 +70,7 @@ int YTPostChat( const char * livechatid, const char * message )
   } \
 }", livechatid, message );
 
+	printf( "Request payload: %s\n", AuxData );
 
 //	memset( argv[1], '-', strlen( argv[1] ) );
 //	memset( argv[2], '-', strlen( argv[2] ) );
@@ -123,7 +147,7 @@ int main( int argc, char ** argv )
 		message = argv[2];
 	}
 
-
+	printf( "YTPOSTCHAT: %s, %s\n", strdup(argv[1]), message );
 	return YTPostChat( strdup(argv[1]), message );
 }
 #endif

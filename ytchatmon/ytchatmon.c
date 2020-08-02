@@ -169,8 +169,19 @@ char * GetLivechatData( const char * livechatid, char ** nextpagetoken, int incl
 	
 	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&",livechatid);
 
-//	memset( argv[1], '-', strlen( argv[1] ) );
-//	memset( argv[2], '-', strlen( argv[2] )  );
+	char apikey[8192];
+	int uses_api_key = 0;
+
+	{
+		FILE * f = fopen( "../.ytapikey.txt", "r" );
+		if(f)
+		{
+			fscanf( f, "%8100s", apikey );
+			fclose( f );	
+			uses_api_key = 1;
+		}
+		sprintf( curlurlbase + strlen(curlurlbase), "key=%s&",apikey);
+	}
 
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
@@ -180,19 +191,22 @@ char * GetLivechatData( const char * livechatid, char ** nextpagetoken, int incl
 	req.AuxData = 0;
 	req.AuxDataLength = 0;
 
-	char oauthbear[8192];
-	FILE * f = fopen( "../.oauthtoken.txt", "r" );
-	if( !f )
-	{
-		fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
-		return 0;
-	}
-	fscanf( f, "%s", oauthbear );
-	fclose( f );	
-	char auxhead[8192];
-	sprintf( auxhead, "Authorization: Bearer %s", oauthbear );
-	req.AddedHeaders = auxhead;
 
+	if( !uses_api_key )
+	{
+		char oauthbear[8192];
+		FILE * f = fopen( "../.oauthtoken.txt", "r" );
+		if( !f )
+		{
+			fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
+			return 0;
+		}
+		fscanf( f, "%s", oauthbear );
+		fclose( f );	
+		char auxhead[8192];
+		sprintf( auxhead, "Authorization: Bearer %s", oauthbear );
+		req.AddedHeaders = auxhead;
+	}
 
 	sprintf( curlurl, "%spart=%s%s%s",
 		curlurlbase,

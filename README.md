@@ -8,13 +8,15 @@ sudo apt-get install libssl1.0-dev
 
 ## Youtube API stuff
 
+### OAUTH
+
 First, you will need your youtube oauth creds. 
 
 Log into your API Dashboard.
  * https://console.developers.google.com/
  * Select your project and go to the youtube v3 api section.
  * Create new oauth credentials (or use existing) 
- * Select type for new oauth app to be "other"
+ * Select type for new oauth app to be "other" or "Desktop app"
  * Get the CLIENT_ID and note the SECRET_KEY.
  * Note: Client ID should be something like: ############-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
  * Note: Secret key looks like: #_XXXXXXXXXXXXXXXXX
@@ -27,6 +29,10 @@ cd ytoauthhelper
 ```
 
 Follow on-screen prompts.  It should write your oauth key into `.oauthtoken.txt`.
+
+### Key
+
+Go to the dashboard (see above) Make new API key.  Put it in `.ytapikey.txt`.
 
 ## Doing streamstats
 
@@ -59,4 +65,18 @@ Once these tools are running, you can use streambuddy.
 cd streambuddy
 ./streambuddy
 ```
+
+## ColorChord
+
+Don't forget to get the latest colorchord and then, on another terminal execute:
+
+```
+./colorchord shmtest.conf
+```
+
+
+## Pitfalls
+ * You may need to generate a new OAuth key from a new google account if you get the quote overflowed issue.
+ * You have to be logged in as an account that can actually chat.  There's a ton of reasons accounts can't chat.
+
 

@@ -3,4 +3,5 @@ rundiscordposter.sh
 .client_secret.txt
 .oauthtoken.txt
 .oauthrenew.txt
+.ytapikey.txt
 

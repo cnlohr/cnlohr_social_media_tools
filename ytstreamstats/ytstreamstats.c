@@ -21,10 +21,28 @@ int main( int argc, char ** argv )
 	}	
 
 	const char * vidid = strdup(argv[1]);
-
 	const char * reqtype = "liveStreamingDetails";
 
+	char apikey[8192];
+	int uses_api_key = 0;
+
+	{
+		FILE * f = fopen( "../.ytapikey.txt", "r" );
+		if(f)
+		{
+			fscanf( f, "%8100s", apikey );
+			fclose( f );	
+			uses_api_key = 1;
+		}
+	}
 	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/videos?id=%s&part=%s", vidid,reqtype);
+
+	if( uses_api_key )
+	{
+		//fprintf( stderr, "Warning: Using API key instead of OAUTH\n" );
+		sprintf( curlurlbase + strlen(curlurlbase), "&key=%s", apikey );
+	}
+//	fprintf( stderr, "Request: %s\n", curlurlbase);
 
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
@@ -32,23 +50,29 @@ int main( int argc, char ** argv )
 	req.port = 0;
 	req.URL = curlurlbase;
 
-	char oauthbear[8192];
-	FILE * f = fopen( "../.oauthtoken.txt", "r" );
-	if( !f )
+	if( !uses_api_key )
 	{
-		fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
-		return -9;
+		char oauthbear[8192];
+		FILE * f = fopen( "../.oauthtoken.txt", "r" );
+		if( !f )
+		{
+			fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
+			return -9;
+		}
+		fscanf( f, "%s", oauthbear );
+		fclose( f );	
+		sprintf( auxhead, "Authorization: Bearer %s", oauthbear );
+		req.AddedHeaders = auxhead;
 	}
-	fscanf( f, "%s", oauthbear );
-	fclose( f );	
+	else
+	{
+		req.AddedHeaders = 0;
+	}
 
-	sprintf( auxhead, "Authorization: Bearer %s", oauthbear );
-
-	req.AddedHeaders = auxhead;
-	char AuxData[8192];    //For Websockets, this is the "Origin" URL.  Otherwise, it's Post data.
-
+	//char AuxData[8192];    //For Websockets, this is the "Origin" URL.  Otherwise, it's Post data.
 	req.AuxData = 0;
 	req.AuxDataLength = 0;
+
 
 	//Get a bunch of messages
 	struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );

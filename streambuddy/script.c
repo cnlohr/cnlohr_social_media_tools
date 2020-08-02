@@ -7,8 +7,8 @@
 #define FULL_1080P
 //#define RES_1366x768
 
-#define STREAMID   "Ij1oqvcllUs"
-#define LIVECHATID "EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU"
+#define STREAMID   "sMQcz8fDTpg"
+#define LIVECHATID "Cg0KC3NNUWN6OGZEVHBnKicKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxILc01RY3o4ZkRUcGc"
 
 #ifdef FULL_1080P
 
@@ -59,12 +59,16 @@ char * strchr( const char *, char );
 void glColor4f( float r, float g, float b, float a );
 void glEnable (int cap);
 void glBlendFunc (int sfactor, int dfactor);
+void glClear( int mask );
 #define GL_BLEND				0x0BE2
 #define GL_ONE_MINUS_DST_ALPHA			0x0305
 #define GL_DST_ALPHA				0x0304
 #define GL_SRC_ALPHA				0x0302
 #define GL_ONE_MINUS_SRC_ALPHA			0x0303
-
+#define GL_DEPTH_BUFFER_BIT   0x00000100 // == 0b000000100000000
+#define GL_ACCUM_BUFFER_BIT   0x00000200 // == 0b000001000000000
+#define GL_STENCIL_BUFFER_BIT 0x00000400 // == 0b000010000000000
+#define GL_COLOR_BUFFER_BIT   0x00004000 // == 0b100000000000000
 
 //At bottom of code, send message to chat.
 void SendChatMessage( const char * message );
@@ -160,11 +164,12 @@ int update( struct ScriptStructure * cid )
 #define RIGHTTOP 480
 
 	CNFGDrawToTransparencyMode( 1 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 
 	CNFGColor( 0x000000 );
 	CNFGTackRectangle( 0, 0, sw, sh );
 	CNFGColor( 0xffffff );
 	CNFGTackRectangle( 0, RIGHTTOP, BRD_X, BRD_Y );
-	CNFGColor( 0x000000 );
+	CNFGColor( 0x0000000 );
 	CNFGTackRectangle( 0, 0, WIN_X, WIN_Y );
 	CNFGDrawToTransparencyMode( 0 );
 

@@ -13,6 +13,7 @@ void * RunStreamStatus( void * v )
 	while(!doquit)
 	{
 		//sprintf( NowPlaying, "Hello, world %d\n", k++ );
+
 		procv = spawn_process_with_pipes( argv[0], argv, pipes );
 		OGUSleep(1000000);
 
@@ -38,7 +39,7 @@ void * RunStreamStatus( void * v )
 		if( procv > 0 )	waitpid( procv, &ret, 0);
 		//printf( "STREAM STATUS: %s\n", tbuff );
 
-
+		printf( "%s\n", tbuff );
 		char * ssv = strstr( tbuff, "\"concurrentViewers\"" );
 		if( ssv && (ssv = strchr( ssv + 19, '\"' ) ) )
 		{

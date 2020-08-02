@@ -99,6 +99,8 @@ void PopFn( TCCEngine * tce )
 	TCCESetSym( tce, "open", open );
 	TCCESetSym( tce, "sprintf", sprintf );
 	TCCESetSym( tce, "glEnable", glEnable );
+	TCCESetSym( tce, "glClear", glClear );
+	TCCESetSym( tce, "glClearColor", glClearColor );
 
 
 
@@ -127,7 +129,7 @@ int main()
 	CNFGClearTransparencyLevel();
 	const char * additionalfiles[] = { "fireworks.h", "colorchord.h", "nowplaying.h", "livechatmon.h", "streamstatus.h" };
 
-	TCCEngine * e = TCCECreate( "script.c", additionalfiles, 5, PopFn, tcceb );
+	TCCEngine * e = TCCECreate( "script.c", additionalfiles, 5, PopFn, 0, tcceb );
 
 	while(1)
 	{
