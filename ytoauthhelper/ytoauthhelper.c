@@ -1,7 +1,6 @@
 //Copyright <>< Charles Lohr
 //This file may be licensed under the MIT/x11 or NewBSD License.
 
-
 //Based on guide here: https://developers.google.com/youtube/v3/guides/auth/client-side-web-apps
 //Geared around offline mode: https://developers.google.com/identity/protocols/OAuth2WebServer#offline
 
@@ -22,13 +21,13 @@
 int port = 8089;
 char * client_secret;
 char * client_id;
-char oauthresp[1024];
+char oauthresp[2048];
 volatile int oauthrespgot;
 
 static void oauth2cb()
 {
-	URLDecode( oauthresp, 512, curhttp->pathbuffer+18 );
-
+	URLDecode( oauthresp, 1024, curhttp->pathbuffer+18 );
+	printf( "OAUTH2CB: %s\n", oauthresp );
 	if( strncmp( oauthresp, "code=", 5 ) != 0 )
 	{
 		fprintf( stderr, "Error received on key.\n%s\n", oauthresp );
@@ -58,8 +57,26 @@ static void oauth2cb()
 	req.AuxData = content;
 	req.AuxDataLength = strlen( content );
 
+	printf( "Submitting OAUTH Request: %s\n", content );
+
+	if( 1 )
+	{
+		FILE * f = fopen( "authdebug.html", "w" );
+		fprintf( f, "<HTML>\n<BODY>\n<FORM action=\"https://accounts.google.com/o/oauth2/token\" method=\"POST\" enctype=\"application/x-www-form-urlencoded\">\n" );
+		fprintf( f, "<INPUT TYPE=TEXT name=code value=\"%s\">\n", oauthresp+5 );
+		fprintf( f, "<INPUT TYPE=TEXT name=client_id value=\"%s\">\n", client_id );
+		fprintf( f, "<INPUT TYPE=PASSWORD name=client_secret value=\"%s\">\n", client_secret );
+		fprintf( f, "<INPUT TYPE=TEXT name=grant_type VALUE=authorization_code>\n" );
+		fprintf( f, "<INPUT TYPE=TEXT name=redirect_uri VALUE=\"http://localhost:%d/d/oauth2callback\">\n", port );
+		fprintf( f, "<INPUT TYPE=SUBMIT></FORM></BODY></HTML>\n" );
+		fclose( f );
+		//exit( 0 );
+	}
+
 	//Get a bunch of messages
 	struct cnhttpclientresponse * r = CNHTTPClientTransact( &req );
+
+	printf( "Got response (%d octets): %s\n", r->payloadlen, r->payload );
 
 	if( !r->payload )
 	{
@@ -75,7 +92,7 @@ static void oauth2cb()
 	if( foundkey ) endkey = strchr( ++foundkey, '\"' );
 	if( !foundkey || !endkey )
 	{
-		fprintf( stderr, "Error: can't find token.\n" );
+		fprintf( stderr, "Error: can't find token.  Got: %s\n", r->payload );
 		exit( -18 );
 	}
 
@@ -85,7 +102,7 @@ static void oauth2cb()
 	if( foundrenew ) endrenew = strchr( ++foundrenew, '\"' );
 	if( !foundrenew || !endrenew )
 	{
-		fprintf( stderr, "Error: can't find token.\n" );
+		fprintf( stderr, "Error: can't find token. Got: %s\n", r->payload );
 		exit( -18 );
 	}
 	*endkey = 0;

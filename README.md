@@ -13,10 +13,12 @@ First, you will need your youtube oauth creds.
 Log into your API Dashboard.
  * https://console.developers.google.com/
  * Select your project and go to the youtube v3 api section.
- * Create new oauth credentials (or use existing)
+ * Create new oauth credentials (or use existing) 
  * Select type for new oauth app to be "other"
  * Get the CLIENT_ID and note the SECRET_KEY.
- * Write them into `.client_id.txt` and `.client_secret.txt`.
+ * Note: Client ID should be something like: ############-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+ * Note: Secret key looks like: #_XXXXXXXXXXXXXXXXX
+ * Write them into `.client_id.txt` and `.client_secret.txt` to the main `cnlohr_social_media_tools` folder.
 
 Next, get your oauth keys.
 ```
@@ -25,6 +27,8 @@ cd ytoauthhelper
 ```
 
 Follow on-screen prompts.  It should write your oauth key into `.oauthtoken.txt`.
+
+## Doing streamstats
 
 Find your video video id by looking on the livechat popout, i.e. 16NSQORHRqU
 
