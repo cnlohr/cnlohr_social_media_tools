@@ -39,7 +39,7 @@ void * RunStreamStatus( void * v )
 		if( procv > 0 )	waitpid( procv, &ret, 0);
 		//printf( "STREAM STATUS: %s\n", tbuff );
 
-		printf( "%s\n", tbuff );
+		//printf( "%s\n", tbuff );
 		char * ssv = strstr( tbuff, "\"concurrentViewers\"" );
 		if( ssv && (ssv = strchr( ssv + 19, '\"' ) ) )
 		{

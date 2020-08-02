@@ -169,7 +169,7 @@ int update( struct ScriptStructure * cid )
 	CNFGTackRectangle( 0, 0, sw, sh );
 	CNFGColor( 0xffffff );
 	CNFGTackRectangle( 0, RIGHTTOP, BRD_X, BRD_Y );
-	CNFGColor( 0x0000000 );
+	CNFGColor( 0x000000 );
 	CNFGTackRectangle( 0, 0, WIN_X, WIN_Y );
 	CNFGDrawToTransparencyMode( 0 );
 
