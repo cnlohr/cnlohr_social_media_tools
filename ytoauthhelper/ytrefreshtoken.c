@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <osg_aux.h>
+#include <os_generic.h>
+#include <stdint.h>
 
 static int LoadFileLineIntoBuffer( const char * folder_prefix, const char * file, char * buffer, int buffersize )
 {
@@ -40,7 +42,7 @@ int YTRefreshOAuthToken( const char * folder_prefix)
 	{
 		return -1;
 	}
-	
+
 	struct cnhttpclientrequest req;
 	memset( &req, 0, sizeof( req ) );
 	req.host = 0;
@@ -65,6 +67,7 @@ int YTRefreshOAuthToken( const char * folder_prefix)
 		return( -5 );
 	}
 
+//	puts(r->payload);	
 	char * foundkey = strstr( r->payload, "access_token" );
 	char * endkey;
 	if( foundkey ) foundkey = strchr( foundkey+14, '\"' );
@@ -77,9 +80,23 @@ int YTRefreshOAuthToken( const char * folder_prefix)
 	*endkey = 0;
 
 
+	char * foundexpires = strstr( r->payload, "expires_in" );
+	char * endexpires;
+	if( foundexpires ) foundexpires = strchr( foundexpires+12, '\"' );
+	if( foundexpires ) endexpires = strchr( ++foundexpires, '\"' );
+	uint64_t expires_in = foundexpires?atoi(foundexpires):3600;
+
+
 	FILE * f = fopen( "../.oauthtoken.txt", "w" );
 	fprintf( f, "%s\n", foundkey );
 	fclose( f );
+
+
+	f = fopen( "../.oauthexpiration.txt", "w" );
+	fprintf( f, "%ld\n", (uint64_t)OGGetAbsoluteTime() + expires_in );
+	fclose( f );
+
+
 	return 0;
 }
 

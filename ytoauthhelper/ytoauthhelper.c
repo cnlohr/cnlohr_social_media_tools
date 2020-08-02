@@ -16,7 +16,7 @@
 #include <http_bsd.h>
 #include <cnhttp.h>
 #include <osg_aux.h>
-
+#include <os_generic.h>
 
 int port = 8089;
 char * client_secret;
@@ -96,6 +96,12 @@ static void oauth2cb()
 		exit( -18 );
 	}
 
+	char * foundexpires = strstr( r->payload, "expires_in" );
+	char * endexpires;
+	if( foundexpires ) foundexpires = strchr( foundexpires+12, '\"' );
+	if( foundexpires ) endexpires = strchr( ++foundexpires, '\"' );
+	uint64_t expires_in = foundexpires?atoi(foundexpires):3600;
+
 	char * foundrenew = strstr( r->payload, "refresh_token" );
 	char * endrenew;
 	if( foundrenew ) foundrenew = strchr( foundrenew+16, '\"' );
@@ -118,6 +124,9 @@ static void oauth2cb()
 	fprintf( f, "%s\n", foundrenew );
 	fclose( f );
 
+	f = fopen( "../.oauthexpiration.txt", "w" );
+	fprintf( f, "%ld\n", (uint64_t)OGGetAbsoluteTime() + expires_in );
+	fclose( f );
 
 	DataStartPacket();
 	PushString( "<HTML><BODY ONLOAD=\"window.open('','_parent','');window.close();\">Auth ok.  You can close this page.</BODY></HTML>" );

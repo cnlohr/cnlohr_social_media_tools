@@ -22,6 +22,9 @@ Log into your API Dashboard.
  * Note: Secret key looks like: #_XXXXXXXXXXXXXXXXX
  * Write them into `.client_id.txt` and `.client_secret.txt` to the main `cnlohr_social_media_tools` folder.
 
+Note: Many of these tools can also use an API key instead of an OAUTH login.  You should also create a new API key
+using the dashboard, and then put that into `.ytapikey.txt`.
+
 Next, get your oauth keys.
 ```
 cd ytoauthhelper
@@ -29,10 +32,6 @@ cd ytoauthhelper
 ```
 
 Follow on-screen prompts.  It should write your oauth key into `.oauthtoken.txt`.
-
-### Key
-
-Go to the dashboard (see above) Make new API key.  Put it in `.ytapikey.txt`.
 
 ## Doing streamstats
 
@@ -45,17 +44,25 @@ cd ytstreamstats
 ./ytstreamstats [stream id]
 ```
 
+Once you do so, ytstreamstats will write out `stream_id.txt` and `live_chat_id.txt` with the video ID and the livechat ID, i.e. `EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU`.
+
 or
 
 ```
-./runytchatmon.sh EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU | tabformatter/tabformatter | tee chatlog.txt |  ./addtime.sh | ./rundiscordposter.sh
+./runytchatmon.sh - | tabformatter/tabformatter | tee chatlog.txt |  ./addtime.sh | ./rundiscordposter.sh
+```
+
+or
+
+```
+./runytchatmon.sh - | tabformatter/tabformatter | tee chatlog.txt
 ```
 
 or
 
 ```
 cd ytposter
-./ytposter [stream id] chat message
+./ytposter - "chat message"
 ```
 
 

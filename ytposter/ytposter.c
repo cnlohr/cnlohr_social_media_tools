@@ -6,12 +6,51 @@
 #include <unistd.h>
 
 
+
+
+#ifndef LOADFILEDEFINED
+#define LOADFILEDEFINED
+static int LoadFileLineIntoBuffer( const char * folder_prefix, const char * file, char * buffer, int buffersize )
+{
+	char filename[1024];
+	snprintf( filename, 1024, "%s/%s", folder_prefix, file );
+	FILE * f = fopen( filename, "r" );
+	if( !f )
+	{
+		fprintf( stderr, "Error: can't get client_id.txt\n" );
+		return -1;
+	}
+	int c;
+	int i = 0;
+	while( ( c = fgetc( f ) ) != EOF && i < buffersize-1 )
+	{
+		if( c == '\n' ) break;
+		buffer[i++] = c;
+	}
+	buffer[i] = 0;
+	fclose( f );
+	return i;
+}
+#endif
+
 int YTPostChat( const char * livechatid, const char * message )
 {
 	char curlurlbase[8192];
 	char auxhead[8192];
-
+	char livechatbuff[128];
 	const char * reqtype = "snippet";
+
+	if( livechatid == 0 || livechatid[0] == '-' )
+	{
+		int len = LoadFileLineIntoBuffer( "..", "live_chat_id.txt", livechatbuff, sizeof( livechatbuff ) );
+		if( len < 5 )
+		{
+			fprintf( stderr, "Error: Live chat ID Invalid\n" );
+			return -5;
+		}
+		livechatid = livechatbuff;
+	}
+	
 
 	char apikey[8192];
 	int uses_api_key = 0;
@@ -147,7 +186,6 @@ int main( int argc, char ** argv )
 		message = argv[2];
 	}
 
-	printf( "YTPOSTCHAT: %s, %s\n", strdup(argv[1]), message );
 	return YTPostChat( strdup(argv[1]), message );
 }
 #endif

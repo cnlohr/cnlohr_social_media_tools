@@ -125,7 +125,7 @@ int main()
 	gtcceb = &tcceb[0];
 
 	CNFGPrepareForTransparency();
-	CNFGSetupFullscreen( "test", 0 );
+	CNFGSetupFullscreen( "test", 1 );
 	CNFGClearTransparencyLevel();
 	const char * additionalfiles[] = { "fireworks.h", "colorchord.h", "nowplaying.h", "livechatmon.h", "streamstatus.h" };
 

@@ -9,13 +9,20 @@ uint8_t * cc_dft_data;
 uint8_t * cc_notes_data;
 int ccoctaves;
 
+#ifdef CCATOP
+#define CC_START_X WIN_X
+#define CC_END_X BRD_X
+#define CC_Y_BOT (CHAT_Y)
+#else
 #define CC_START_X 0
 #define CC_END_X WIN_X
+#define CC_Y_BOT WIN_Y
+#endif
 
 #ifdef FULL_1080P
 #define CC_X 16
 #define CC_Y 3
-#define CC_START_Y WIN_Y
+#define CC_START_Y CC_Y_BOT
 #define CCW_START_X WIN_X
 #define CCW_END_X BRD_X
 #endif
@@ -46,7 +53,7 @@ void DrawColorChord()
 		uint8_t * mark = cc_lights_data + 4;
 
 		int sx = CCW_END_X-CCW_START_X;
-		int sy = BRD_Y-CC_START_Y;
+		int sy = CC_Y_BOT-CC_START_Y;
 
 		sx /= CC_X;
 		sy /= CC_Y;
@@ -78,8 +85,8 @@ void DrawColorChord()
 			if( rsat > .8 ) rsat = .8;
 			CNFGColor( CCtoHEX( (i% freqbins)/(float) freqbins,1, rsat ) );
 			int rx = i * sx + CC_START_X;
-			int ry = BRD_Y - unfoldedbins[i]*500;
-			CNFGTackRectangle( rx, ry, rx+sx+1, ry+1000 );
+			int ry = CC_Y_BOT - unfoldedbins[i]*500;
+			CNFGTackRectangle( rx, ry, rx+sx+1, CC_Y_BOT+1 );
 		}
 	}
 

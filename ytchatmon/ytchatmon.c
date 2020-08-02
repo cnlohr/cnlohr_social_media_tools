@@ -7,6 +7,32 @@
 #include <unistd.h>
 
 
+
+#ifndef LOADFILEDEFINED
+#define LOADFILEDEFINED
+static int LoadFileLineIntoBuffer( const char * folder_prefix, const char * file, char * buffer, int buffersize )
+{
+	char filename[1024];
+	snprintf( filename, 1024, "%s/%s", folder_prefix, file );
+	FILE * f = fopen( filename, "r" );
+	if( !f )
+	{
+		fprintf( stderr, "Error: can't get client_id.txt\n" );
+		return -1;
+	}
+	int c;
+	int i = 0;
+	while( ( c = fgetc( f ) ) != EOF && i < buffersize-1 )
+	{
+		if( c == '\n' ) break;
+		buffer[i++] = c;
+	}
+	buffer[i] = 0;
+	fclose( f );
+	return i;
+}
+#endif
+
 const char * GetTokenByName( char * origtext, jsmntok_t * tok )
 {
 	origtext[tok->end] = 0;
@@ -164,8 +190,19 @@ char * GetLivechatData( const char * livechatid, char ** nextpagetoken, int incl
 {
 	char curlurlbase[8192];
 	char curlurl[8192];
+	char livechatbuff[128];
 	const char * reqtype = "authorDetails,snippet";
 
+	if( livechatid == 0 || livechatid[0] == '-' )
+	{
+		int len = LoadFileLineIntoBuffer( "..", "live_chat_id.txt", livechatbuff, sizeof( livechatbuff ) );
+		if( len < 5 )
+		{
+			fprintf( stderr, "Error: Live chat ID Invalid\n" );
+			return strdup("");
+		}
+		livechatid = livechatbuff;
+	}
 	
 	sprintf( curlurlbase, "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=%s&",livechatid);
 
@@ -262,7 +299,7 @@ int main( int argc, char ** argv )
 
 	if( argc != 3 )
 	{
-		fprintf( stderr, "Error! Usage: ./chatmon [livechatid] [show_history (0/1)]\n" );
+		fprintf( stderr, "Error! Usage: ./chatmon [livechatid use - if you want to use id from ytstreamstats] [show_history (0/1)]\n" );
 		fprintf( stderr, "Reads youtube livestream comments and sends to STDOUT. Format: [user]\\t[text]\\n\n" );
 		return -5;
 	}	
