@@ -49,7 +49,7 @@ Once you do so, ytstreamstats will write out `stream_id.txt` and `live_chat_id.t
 or
 
 ```
-./runytchatmon.sh - | tabformatter/tabformatter | tee chatlog.txt |  ./addtime.sh | ./rundiscordposter.sh
+./runytchatmon.sh - | tabformatter/tabformatter | tee chatlog.txt
 ```
 
 or
@@ -86,4 +86,11 @@ Don't forget to get the latest colorchord and then, on another terminal execute:
  * You may need to generate a new OAuth key from a new google account if you get the quote overflowed issue.
  * You have to be logged in as an account that can actually chat.  There's a ton of reasons accounts can't chat.
 
+## Discord Poster (Currently defunct)
+
+You can stream things to discord using this tool as well.
+
+```
+ echo "Hello!" |  ./addtime.sh | ./rundiscordposter.sh
+```
 
