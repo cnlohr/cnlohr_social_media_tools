@@ -16,7 +16,7 @@ int ccoctaves;
 #else
 #define CC_START_X 0
 #define CC_END_X WIN_X
-#define CC_Y_BOT WIN_Y
+#define CC_Y_BOT BRD_Y
 #endif
 
 #ifdef FULL_1080P

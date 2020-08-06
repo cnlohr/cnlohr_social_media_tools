@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define FULL_1080P_WITHOUT_MENU
-//#define FULL_1080P
+//#define FULL_1080P_WITHOUT_MENU
+#define FULL_1080P
 //#define RES_1366x768
+#define NO_SYSTEM_MENU
 
 #define STREAMID   0
 //"sMQcz8fDTpg"
@@ -16,15 +17,25 @@
 #ifdef FULL_1080P
 
 #define BRD_X 1920
-#define BRD_Y 1056
 #define WIN_X 1400
+
+#ifdef NO_SYSTEM_MENU
+#define BRD_Y 1080
+#define WIN_Y 980
+#define RIGHTTOP 240
+#define CHAT_Y 900
+#else
+#define BRD_Y 1056
 #define WIN_Y 956
+#define RIGHTTOP 480
+#define CHAT_Y 500
+#endif
+
 #define CHAT_Y 500
 #define DEFAULT_SIZE 4
 #define BIG_SIZE 8
 #define HUGE_SIZE 10
 #define STATS_X 300
-#define RIGHTTOP 480
 
 #elif defined( FULL_1080P_WITHOUT_MENU )
 
@@ -160,7 +171,7 @@ void DrawTextOverlay()
 {
 	CNFGColor( 0xffffff );
 
-	DrawFatTextAt( WIN_X + 4, CHAT_Y, DEFAULT_SIZE, BRD_X-WIN_X-30, BRD_Y - CHAT_Y, "%s", ChatWindowText );
+	DrawFatTextAt( WIN_X + 4, CHAT_Y+00, DEFAULT_SIZE, BRD_X-WIN_X-30, BRD_Y - CHAT_Y, "%s", ChatWindowText );
 #ifdef CCATOP
 	DrawFatTextAt( WIN_X, CHAT_Y-CCATOP, DEFAULT_SIZE, -1, -1, "%s", NowPlaying );
 	DrawFatTextAt( WIN_X, CHAT_Y-CCATOP+120, BIG_SIZE, -1, -1, 

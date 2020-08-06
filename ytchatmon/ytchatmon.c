@@ -323,10 +323,14 @@ int main( int argc, char ** argv )
 			printf( "%s", ret );
 			fflush( stdout );
 		}
-		if( pollinfo )
-			usleep( pollinfo * 1000 );
-		else
-			sleep(2);
+
+		//Pollinfo is just too short.  We blow our quota :(
+//		if( pollinfo )
+//			usleep( pollinfo * 1000 );
+//		else
+//			sleep(2);
+		sleep(3);
+
 	}
 
 }
