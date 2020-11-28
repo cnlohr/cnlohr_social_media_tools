@@ -5,7 +5,7 @@ CNTOOLS:= \
 	../cntools/ssl/cnhttpcommon.c \
 	../cntools/ssl/cnsslclient.c
 
-JSMN:=../jsmn/jsmn.c
+JSMN:=../jsmn/jsmn.h
 
 LDFLAGS:=-lssl -lcrypto
 CFLAGS:=-g -I../cntools/ssl -I../jsmn
