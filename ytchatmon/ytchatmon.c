@@ -6,8 +6,6 @@
 #include <jsmn.h>
 #include <unistd.h>
 
-
-
 #ifndef LOADFILEDEFINED
 #define LOADFILEDEFINED
 static int LoadFileLineIntoBuffer( const char * folder_prefix, const char * file, char * buffer, int buffersize )
@@ -410,12 +408,12 @@ char* GetLivechatDataV1API(const char* apikey, char** continuation)
 	if (Oauth)
 	{
 
-		sprintf(curlurlbase, "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?commandMetadata=%5Bobject%20Object%5D&continuation=%s&pbj=1", *continuation);
+		sprintf(curlurlbase, "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?commandMetadata=%%5Bobject%%20Object%%5D&continuation=%s&pbj=1", *continuation);
 		
 	}
 	else {
 
-		sprintf(curlurlbase, "https://www.youtube.com/live_chat/get_live_chat?commandMetadata=%5Bobject%20Object%5D&continuation=%s&pbj=1", *continuation);
+		sprintf(curlurlbase, "https://www.youtube.com/live_chat/get_live_chat?commandMetadata=%%5Bobject%%20Object%%5D&continuation=%s&pbj=1", *continuation);
 			
 
 	}
@@ -479,7 +477,7 @@ char* GetLivechatDataV1API(const char* apikey, char** continuation)
 	}
 	else
 	{
-		fprintf(stderr, "Error %d parsing the JSON : %s\n", &tokens, r->payload);
+		fprintf(stderr, "Error %p parsing the JSON : %s\n", &tokens, r->payload);
 		ret = 0;
 	}
 	free(tokens);
@@ -636,8 +634,8 @@ int main( int argc, char ** argv )
 		show_history = atoi(argv[2]);
 		const char* livechatid = argv[1];//"EiEKGFVDRzd5SVd0VndjRU5nX1pTLW5haGc1ZxIFL2xpdmU";
 		char* nextpagetoken = 0;
-
 		char* ret = GetLivechatData(livechatid, &nextpagetoken, show_history, &pollinfo);
+
 		if (ret)
 		{
 			printf("%s", ret);

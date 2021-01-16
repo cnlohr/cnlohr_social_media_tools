@@ -15,7 +15,7 @@ void * RunStreamStatus( void * v )
 		//sprintf( NowPlaying, "Hello, world %d\n", k++ );
 
 		procv = spawn_process_with_pipes( argv[0], argv, pipes );
-		OGUSleep(1000000);
+		OGUSleep(7000000); //7 seconds between polls
 
 		if( procv < 1 ) goto closev;
 		fcntl( pipes[1], F_SETFL, O_NONBLOCK );

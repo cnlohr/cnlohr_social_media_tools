@@ -31,8 +31,11 @@
 #define CHAT_Y 500
 #endif
 
-#define CHAT_Y 1080 //Normally 400 but now nixed
+///XXXXX HERE XXXXX
+#ifdef DISABLE_CHAT
+#define CHAT_Y 400 //Normally 400 but now nixed
 #define RIGHTTOP 980 //Disable
+#endif
 
 #define DEFAULT_SIZE 4
 #define BIG_SIZE 8
@@ -40,7 +43,6 @@
 #define STATS_X 300
 
 #elif defined( FULL_1080P_WITHOUT_MENU )
-
 #define CCATOP 190
 #define BRD_X 1920
 #define BRD_Y 1080

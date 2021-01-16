@@ -220,7 +220,18 @@ int main(int argc, char **argv)
 			endfoundactiveChatId = strchr(++foundactiveChatId, '\"');
 		if (!foundactiveChatId || !endfoundactiveChatId)
 		{
-			fprintf(stderr, "Error: can't find activeLiveChatId.\n");
+			FILE *f = fopen("../live_chat_id.txt", "rb");
+			if( !f )
+			{
+				fprintf(stderr, "Error: can't find activeLiveChatId.\n");
+				return;
+			}
+			else
+			{
+				foundactiveChatId = malloc( 1024 );
+				fscanf(f, "%s\n", foundactiveChatId);
+				fclose(f);
+			}		
 		}
 		else
 		{

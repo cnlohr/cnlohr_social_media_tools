@@ -15,6 +15,9 @@
 #include <string.h>
 #include <http_bsd.h>
 #include <cnhttp.h>
+
+#define OSG_IMPLEMENTATION
+
 #include <osg_aux.h>
 #include <os_generic.h>
 
