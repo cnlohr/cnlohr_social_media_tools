@@ -46,4 +46,5 @@ void * RunNowPlaying( void * v )
 		close( pipes[1] );
 		close( pipes[2] );
 	}
+	return 0;
 }

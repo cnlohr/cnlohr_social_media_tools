@@ -52,8 +52,9 @@ void * RunStreamStatus( void * v )
 		close( pipes[0] );
 		close( pipes[1] );
 		close( pipes[2] );
-		OGUSleep(4000000);
+		OGUSleep(5000000);
 	}
+	return 0;
 }
 
 

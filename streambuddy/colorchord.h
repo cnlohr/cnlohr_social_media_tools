@@ -44,8 +44,6 @@ int freqbins = 1;
 
 void DrawColorChord()
 {
-
-
 #if 0
 	if( cc_lights_data )
 	{

@@ -23,7 +23,7 @@
 #define BRD_Y 1080
 #define WIN_Y 980
 #define RIGHTTOP 240
-#define CHAT_Y 900
+#define CHAT_Y 400
 #else
 #define BRD_Y 1056
 #define WIN_Y 956
@@ -31,7 +31,9 @@
 #define CHAT_Y 500
 #endif
 
-#define CHAT_Y 500
+#define CHAT_Y 1080 //Normally 400 but now nixed
+#define RIGHTTOP 980 //Disable
+
 #define DEFAULT_SIZE 4
 #define BIG_SIZE 8
 #define HUGE_SIZE 10

@@ -16,6 +16,8 @@ void * RunChatMon( void * v )
 
 	int already_init = 0;
 
+	double dLast = 0;
+
 	fcntl( clf, F_SETFL, O_NONBLOCK );
 	while(!doquit)
 	{
@@ -90,6 +92,40 @@ void * RunChatMon( void * v )
 
 		//printf( "%d %d %d,%s\n", ChatWindowText[i], i, r, ChatWindowText );
 		OGUSleep( 100000 );
+
+		double now = OGGetAbsoluteTime();
+		if( now - dLast > 1000 )
+		{
+			dLast = now;
+			printf( "Refreshing stream token\n" );
+			int pipes[3];
+			char tbuff[1024];
+			int ret;
+			char * argv[3] = { "bash", "./refreshtoken.sh", 0 };
+			int procv = spawn_process_with_pipes( "bash", argv, pipes );
+			OGUSleep(200000);
+			if( procv < 1 ) goto closev;
+			fcntl( pipes[1], F_SETFL, O_NONBLOCK );
+			fcntl( pipes[2], F_SETFL, O_NONBLOCK );
+			int r = read( pipes[2], tbuff, 1024 );
+			if( r > 0 ) 
+			{
+				tbuff[r] = 0;
+				printf( "refresh response (err): %s\n", tbuff );
+			}
+			r = read( pipes[1], tbuff, 1024 );
+			if( r > 0 ) 
+			{
+				tbuff[r] = 0;
+				printf( "refresh response: %s\n", tbuff );
+			}
+			if( procv > 0 )	waitpid(procv, &ret, 0);
+			printf( "Stream token stat: %d %d\n", ret, procv );
+			closev:
+			close( pipes[0] );
+			close( pipes[1] );
+			close( pipes[2] );
+		}
 	}
 }
 

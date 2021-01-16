@@ -65,6 +65,8 @@ void PopFn( TCCEngine * tce )
 	TCCESetSym( tce, "DrawFatTextAt", DrawFatTextAt );
 	TCCESetSym( tce, "spawn_process_with_pipes", spawn_process_with_pipes );
 
+	TCCESetSym( tce, "pipe", pipe );
+
 
 	TCCESetSym( tce, "mmap", mmap );
 	TCCESetSym( tce, "munmap", munmap );

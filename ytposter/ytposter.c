@@ -97,7 +97,7 @@ int YTPostChat( const char * livechatid, const char * message )
 
 	req.AddedHeaders = auxhead;
 
-	char AuxData[8192];    //For Websockets, this is the "Origin" URL.  Otherwise, it's Post data.
+	char AuxData[16384];    //For Websockets, this is the "Origin" URL.  Otherwise, it's Post data.
 
 	snprintf( AuxData, sizeof( AuxData ) - 1, "{\
   \"snippet\": { \
@@ -107,7 +107,7 @@ int YTPostChat( const char * livechatid, const char * message )
       \"messageText\": \"%s\" \
     } \
   } \
-}", livechatid, message );
+}", livechatid, message, message );
 
 	printf( "Request payload: %s\n", AuxData );
 

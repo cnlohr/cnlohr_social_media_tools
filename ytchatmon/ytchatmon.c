@@ -189,7 +189,7 @@ char * ProcessChatMessageResponse(char * origtext, jsmntok_t ** tok, jsmntok_t *
 char * GetLivechatData( const char * livechatid, char ** nextpagetoken, int include_history, int * pollinfo )
 {
 	char curlurlbase[8192];
-	char curlurl[8192];
+	char curlurl[16384];
 	char livechatbuff[128];
 	const char * reqtype = "authorDetails,snippet";
 
@@ -231,21 +231,21 @@ char * GetLivechatData( const char * livechatid, char ** nextpagetoken, int incl
 
 	if( !uses_api_key )
 	{
-		char oauthbear[8192];
+		char oauthbear[4096];
 		FILE * f = fopen( "../.oauthtoken.txt", "r" );
 		if( !f )
 		{
 			fprintf( stderr, "Error: no oauth token found.  Run yt_oauth_helper\n" );
 			return 0;
 		}
-		fscanf( f, "%s", oauthbear );
+		fscanf( f, "%4095s", oauthbear );
 		fclose( f );	
-		char auxhead[8192];
+		char auxhead[8100];
 		sprintf( auxhead, "Authorization: Bearer %s", oauthbear );
 		req.AddedHeaders = auxhead;
 	}
 
-	sprintf( curlurl, "%spart=%s%s%s",
+	snprintf( curlurl, sizeof(curlurl)-1, "%spart=%s%s%s",
 		curlurlbase,
 		reqtype,
 		(nextpagetoken&&*nextpagetoken)?"&pageToken=":"",
@@ -329,8 +329,7 @@ int main( int argc, char ** argv )
 //			usleep( pollinfo * 1000 );
 //		else
 //			sleep(2);
-		sleep(3);
-
+		sleep(4);
 	}
 
 }
